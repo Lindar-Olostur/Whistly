@@ -73,7 +73,24 @@ class MIDISequencer {
     }
     
     init() {
+        setupAudioSession()
         setupAudio()
+    }
+    
+    private func setupAudioSession() {
+        #if os(iOS)
+        do {
+            let session = AVAudioSession.sharedInstance()
+            
+            // Категория .playback позволяет воспроизводить звук даже в режиме "Без звука"
+            try session.setCategory(.playback, mode: .default, options: [])
+            try session.setActive(true)
+            
+            print("AVAudioSession configured successfully")
+        } catch {
+            print("Failed to configure AVAudioSession: \(error)")
+        }
+        #endif
     }
     
     private func setupAudio() {
@@ -245,21 +262,32 @@ class MIDISequencer {
     }
     
     private func setupSequence(_ sequence: MusicSequence) {
+        // Убедимся что аудио сессия активна
+        #if os(iOS)
+        try? AVAudioSession.sharedInstance().setActive(true)
+        #endif
+        
         // Создаём AUGraph для воспроизведения
         var graph: AUGraph?
-        NewAUGraph(&graph)
-        guard let audioGraph = graph else { return }
+        var status = NewAUGraph(&graph)
+        guard status == noErr, let audioGraph = graph else {
+            print("Failed to create AUGraph: \(status)")
+            return
+        }
         
-        // Sampler node
+        // Sampler node - используем Sampler (работает на iOS)
         var samplerNode = AUNode()
         var samplerDesc = AudioComponentDescription(
             componentType: kAudioUnitType_MusicDevice,
-            componentSubType: kAudioUnitSubType_MIDISynth,
+            componentSubType: kAudioUnitSubType_Sampler,
             componentManufacturer: kAudioUnitManufacturer_Apple,
             componentFlags: 0,
             componentFlagsMask: 0
         )
-        AUGraphAddNode(audioGraph, &samplerDesc, &samplerNode)
+        status = AUGraphAddNode(audioGraph, &samplerDesc, &samplerNode)
+        if status != noErr {
+            print("Failed to add sampler node: \(status)")
+        }
         
         // Output node
         var outputNode = AUNode()
@@ -275,15 +303,36 @@ class MIDISequencer {
             componentFlags: 0,
             componentFlagsMask: 0
         )
-        AUGraphAddNode(audioGraph, &outputDesc, &outputNode)
+        status = AUGraphAddNode(audioGraph, &outputDesc, &outputNode)
+        if status != noErr {
+            print("Failed to add output node: \(status)")
+        }
         
-        AUGraphOpen(audioGraph)
-        AUGraphConnectNodeInput(audioGraph, samplerNode, 0, outputNode, 0)
-        AUGraphInitialize(audioGraph)
-        AUGraphStart(audioGraph)
+        status = AUGraphOpen(audioGraph)
+        if status != noErr {
+            print("Failed to open AUGraph: \(status)")
+        }
+        
+        status = AUGraphConnectNodeInput(audioGraph, samplerNode, 0, outputNode, 0)
+        if status != noErr {
+            print("Failed to connect nodes: \(status)")
+        }
+        
+        status = AUGraphInitialize(audioGraph)
+        if status != noErr {
+            print("Failed to initialize AUGraph: \(status)")
+        }
+        
+        status = AUGraphStart(audioGraph)
+        if status != noErr {
+            print("Failed to start AUGraph: \(status)")
+        }
         
         // Привязываем к секвенсу
-        MusicSequenceSetAUGraph(sequence, audioGraph)
+        status = MusicSequenceSetAUGraph(sequence, audioGraph)
+        if status != noErr {
+            print("Failed to set AUGraph to sequence: \(status)")
+        }
         
         self.musicSequence = sequence
         self.auGraph = audioGraph
