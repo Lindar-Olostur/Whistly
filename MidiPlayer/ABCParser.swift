@@ -198,7 +198,7 @@ class ABCParser {
         return 0.5 // По умолчанию 1/8
     }
     
-    /// Парсит ноты из тела мелодии с поддержкой реприз и альтернативных концовок
+    /// Парсит ноты из тела мелодии с поддержкой реприз, триолей и затактов
     private static func parseNotes(body: String, key: String, defaultLength: Double) -> [MIDINote] {
         // Определяем ключевые знаки
         let keyBase = key.replacingOccurrences(of: "maj", with: "")
@@ -216,6 +216,14 @@ class ABCParser {
         var i = expandedBody.startIndex
         var activeAccidentals: [Character: Int] = [:]
         
+        // Триоли: (3 означает 3 ноты за время 2
+        var tupletRemaining: Int = 0      // сколько нот осталось в триоли
+        var tupletRatio: Double = 1.0     // множитель длительности (2/3 для триоли)
+        
+        // Для отслеживания затакта
+        var foundFirstBar = false
+        var pickupNotes: [MIDINote] = []
+        
         while i < expandedBody.endIndex {
             let char = expandedBody[i]
             
@@ -228,9 +236,18 @@ class ABCParser {
             // Тактовая черта - сбрасываем случайные знаки
             if char == "|" {
                 activeAccidentals = [:]
+                
+                if !foundFirstBar {
+                    // Это первая тактовая черта - всё до неё это затакт
+                    foundFirstBar = true
+                    pickupNotes = notes
+                    notes = []
+                    currentBeat = 0
+                }
+                
                 i = expandedBody.index(after: i)
                 // Пропускаем любые символы после |
-                while i < expandedBody.endIndex && !expandedBody[i].isLetter && !expandedBody[i].isWhitespace && !"^_=".contains(expandedBody[i]) {
+                while i < expandedBody.endIndex && !expandedBody[i].isLetter && !expandedBody[i].isWhitespace && !"^_=({".contains(expandedBody[i]) {
                     i = expandedBody.index(after: i)
                 }
                 continue
@@ -265,10 +282,14 @@ class ABCParser {
                 continue
             }
             
-            // Триоль (3xxx
+            // Триоль/туплет (N - N нот за время N-1
             if char == "(" {
                 i = expandedBody.index(after: i)
                 if i < expandedBody.endIndex && expandedBody[i].isNumber {
+                    let n = Int(String(expandedBody[i])) ?? 3
+                    tupletRemaining = n
+                    // (3 = 3 ноты за время 2, (2 = 2 за 3, и т.д.
+                    tupletRatio = Double(n - 1) / Double(n)
                     i = expandedBody.index(after: i)
                 }
                 continue
@@ -287,6 +308,13 @@ class ABCParser {
                 let (newIndex, lengthMod) = parseLengthModifier(expandedBody, from: i)
                 i = newIndex
                 duration *= lengthMod
+                
+                // Применяем триольный множитель
+                if tupletRemaining > 0 {
+                    duration *= tupletRatio
+                    tupletRemaining -= 1
+                }
+                
                 currentBeat += duration
                 continue
             }
@@ -338,6 +366,12 @@ class ABCParser {
                 i = newIndex
                 duration *= lengthMod
                 
+                // Применяем триольный множитель
+                if tupletRemaining > 0 {
+                    duration *= tupletRatio
+                    tupletRemaining -= 1
+                }
+                
                 let note = MIDINote(
                     pitch: UInt8(max(0, min(127, pitch))),
                     velocity: 80,
@@ -350,6 +384,27 @@ class ABCParser {
             } else {
                 i = expandedBody.index(after: i)
             }
+        }
+        
+        // Добавляем затакт в начало
+        // Затакт просто добавляется перед основными нотами
+        if !pickupNotes.isEmpty {
+            // Вычисляем длительность затакта
+            let pickupDuration = pickupNotes.map { $0.endBeat }.max() ?? 0
+            
+            // Сдвигаем основные ноты на длительность затакта
+            let shiftedNotes = notes.map { note in
+                MIDINote(
+                    pitch: note.pitch,
+                    velocity: note.velocity,
+                    startBeat: note.startBeat + pickupDuration,
+                    duration: note.duration,
+                    channel: note.channel
+                )
+            }
+            
+            // Объединяем: затакт + сдвинутые основные ноты
+            notes = pickupNotes + shiftedNotes
         }
         
         return notes
@@ -531,13 +586,24 @@ class ABCParser {
     }
     
     /// Конвертирует ABC tune в MIDIFileInfo для совместимости с существующим кодом
-    static func toMIDIFileInfo(_ tune: ABCTune) -> MIDIFileInfo {
-        let minPitch = tune.notes.map { $0.pitch }.min() ?? 60
-        let maxPitch = tune.notes.map { $0.pitch }.max() ?? 72
+    static func toMIDIFileInfo(_ tune: ABCTune, transpose: Int = 0) -> MIDIFileInfo {
+        // Применяем транспонирование к нотам для отображения
+        let transposedNotes = tune.notes.map { note in
+            MIDINote(
+                pitch: UInt8(max(0, min(127, Int(note.pitch) + transpose))),
+                velocity: note.velocity,
+                startBeat: note.startBeat,
+                duration: note.duration,
+                channel: note.channel
+            )
+        }
+        
+        let minPitch = transposedNotes.map { $0.pitch }.min() ?? 60
+        let maxPitch = transposedNotes.map { $0.pitch }.max() ?? 72
         let totalMeasures = Int(ceil(tune.totalBeats / Double(tune.beatsPerMeasure)))
         
         let trackInfo = MIDITrackInfo(
-            notes: tune.notes,
+            notes: transposedNotes,
             minPitch: minPitch,
             maxPitch: maxPitch,
             totalBeats: tune.totalBeats
@@ -545,7 +611,7 @@ class ABCParser {
         
         return MIDIFileInfo(
             tracks: [trackInfo],
-            allNotes: tune.notes,
+            allNotes: transposedNotes,
             totalBeats: tune.totalBeats,
             beatsPerMeasure: tune.beatsPerMeasure,
             totalMeasures: totalMeasures,

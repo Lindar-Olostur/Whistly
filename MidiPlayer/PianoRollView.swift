@@ -14,10 +14,18 @@ struct PianoRollView: View {
     let endMeasure: Int
     let isPlaying: Bool
     
+    // Состояние зума
+    @State private var scale: CGFloat = 1.0
+    @State private var lastScale: CGFloat = 1.0
+    @State private var offset: CGFloat = 0
+    @State private var lastOffset: CGFloat = 0
+    
     // Настройки отображения
     private let noteHeight: CGFloat = 8
-    private let beatWidth: CGFloat = 40
+    private let baseBeatWidth: CGFloat = 40
     private let pianoKeyWidth: CGFloat = 50
+    private let minScale: CGFloat = 0.5
+    private let maxScale: CGFloat = 4.0
     
     private var visibleNotes: [MIDINote] {
         let startBeat = Double(startMeasure - 1) * Double(midiInfo.beatsPerMeasure)
@@ -28,7 +36,6 @@ struct PianoRollView: View {
     }
     
     private var pitchRange: ClosedRange<UInt8> {
-        // Расширяем диапазон на пару нот для лучшего вида
         let minP = max(0, Int(midiInfo.minPitch) - 2)
         let maxP = min(127, Int(midiInfo.maxPitch) + 2)
         return UInt8(minP)...UInt8(maxP)
@@ -49,8 +56,13 @@ struct PianoRollView: View {
     var body: some View {
         GeometryReader { geometry in
             let availableWidth = geometry.size.width - pianoKeyWidth
-            let calculatedBeatWidth = availableWidth / CGFloat(visibleBeats)
+            let baseWidth = availableWidth / CGFloat(visibleBeats)
+            let scaledBeatWidth = baseWidth * scale
+            let totalContentWidth = CGFloat(visibleBeats) * scaledBeatWidth
             let totalHeight = CGFloat(totalRows) * noteHeight
+            
+            // Ограничиваем offset чтобы не выйти за пределы
+            let maxOffset = max(0, totalContentWidth - availableWidth)
             
             HStack(spacing: 0) {
                 // Piano keys на левой стороне
@@ -60,7 +72,7 @@ struct PianoRollView: View {
                 )
                 .frame(width: pianoKeyWidth)
                 
-                // Основная область piano roll
+                // Основная область piano roll с зумом
                 ScrollView(.vertical, showsIndicators: false) {
                     ZStack(alignment: .topLeading) {
                         // Фон с сеткой
@@ -68,7 +80,7 @@ struct PianoRollView: View {
                             rows: totalRows,
                             beats: Int(visibleBeats),
                             noteHeight: noteHeight,
-                            beatWidth: calculatedBeatWidth,
+                            beatWidth: scaledBeatWidth,
                             beatsPerMeasure: midiInfo.beatsPerMeasure,
                             pitchRange: pitchRange
                         )
@@ -79,7 +91,7 @@ struct PianoRollView: View {
                                 note: note,
                                 pitchRange: pitchRange,
                                 noteHeight: noteHeight,
-                                beatWidth: calculatedBeatWidth,
+                                beatWidth: scaledBeatWidth,
                                 startBeatOffset: startBeatOffset,
                                 isActive: isNoteActive(note)
                             )
@@ -87,25 +99,94 @@ struct PianoRollView: View {
                         
                         // Курсор воспроизведения
                         if isPlaying || currentBeat > 0 {
-                            let cursorX = CGFloat(currentBeat - startBeatOffset) * calculatedBeatWidth
-                            if cursorX >= 0 && cursorX <= availableWidth {
-                                Rectangle()
-                                    .fill(Color.red.opacity(0.8))
-                                    .frame(width: 2, height: totalHeight)
-                                    .offset(x: cursorX)
-                            }
+                            let cursorX = CGFloat(currentBeat - startBeatOffset) * scaledBeatWidth
+                            Rectangle()
+                                .fill(Color.red.opacity(0.8))
+                                .frame(width: 2, height: totalHeight)
+                                .offset(x: cursorX)
                         }
                     }
-                    .frame(width: availableWidth, height: totalHeight)
+                    .frame(width: totalContentWidth, height: totalHeight)
+                    .offset(x: -min(max(0, offset), maxOffset))
+                }
+                .clipped()
+                .gesture(
+                    // Pinch to zoom
+                    MagnificationGesture()
+                        .onChanged { value in
+                            let newScale = lastScale * value
+                            scale = min(max(newScale, minScale), maxScale)
+                            
+                            // Корректируем offset при зуме чтобы центр оставался на месте
+                            let newMaxOffset = max(0, CGFloat(visibleBeats) * baseWidth * scale - availableWidth)
+                            offset = min(offset, newMaxOffset)
+                        }
+                        .onEnded { _ in
+                            lastScale = scale
+                            lastOffset = offset
+                        }
+                )
+                .simultaneousGesture(
+                    // Drag to pan (когда зум > 1)
+                    DragGesture()
+                        .onChanged { value in
+                            if scale > 1.0 {
+                                let newOffset = lastOffset - value.translation.width
+                                let currentMaxOffset = max(0, CGFloat(visibleBeats) * baseWidth * scale - availableWidth)
+                                offset = min(max(0, newOffset), currentMaxOffset)
+                            }
+                        }
+                        .onEnded { _ in
+                            lastOffset = offset
+                        }
+                )
+                .overlay(
+                    // Индикатор зума
+                    VStack {
+                        HStack {
+                            Spacer()
+                            if scale != 1.0 {
+                                Text("\(Int(scale * 100))%")
+                                    .font(.system(size: 10, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.6))
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(
+                                        Capsule()
+                                            .fill(Color.black.opacity(0.5))
+                                    )
+                                    .padding(6)
+                            }
+                        }
+                        Spacer()
+                    }
+                )
+                .onTapGesture(count: 2) {
+                    // Double tap to reset zoom
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        scale = 1.0
+                        lastScale = 1.0
+                        offset = 0
+                        lastOffset = 0
+                    }
                 }
             }
         }
         .background(Color(red: 0.1, green: 0.1, blue: 0.12))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .onChange(of: startMeasure) { _, _ in resetZoom() }
+        .onChange(of: endMeasure) { _, _ in resetZoom() }
     }
     
     private func isNoteActive(_ note: MIDINote) -> Bool {
         currentBeat >= note.startBeat && currentBeat < note.endBeat
+    }
+    
+    private func resetZoom() {
+        scale = 1.0
+        lastScale = 1.0
+        offset = 0
+        lastOffset = 0
     }
 }
 

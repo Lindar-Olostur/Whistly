@@ -155,18 +155,28 @@ struct ContentView: View {
                 )
                 .padding(.horizontal, 20)
                 
-                // Слайдер темпа
-                HStack {
-                    Text("60")
-                        .font(.caption2)
-                        .foregroundColor(.gray)
+                // Слайдер темпа и транспонирование
+                HStack(spacing: 20) {
+                    // Темп
+                    VStack(spacing: 4) {
+                        Text("Tempo")
+                            .font(.caption2)
+                            .foregroundColor(.gray)
+                        HStack {
+                            Text("60")
+                                .font(.system(size: 9))
+                                .foregroundColor(.gray)
+                            Slider(value: $sequencer.tempo, in: 60...240, step: 1)
+                                .tint(Color(red: 0.5, green: 0.6, blue: 0.9))
+                            Text("240")
+                                .font(.system(size: 9))
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
                     
-                    Slider(value: $sequencer.tempo, in: 60...240, step: 1)
-                        .tint(Color(red: 0.5, green: 0.6, blue: 0.9))
-                    
-                    Text("240")
-                        .font(.caption2)
-                        .foregroundColor(.gray)
+                    // Транспонирование
+                    TransposeControl(transpose: $sequencer.transpose)
                 }
                 .padding(.horizontal, 20)
                 
@@ -331,6 +341,71 @@ struct ControlButton: View {
                     .foregroundColor(.white.opacity(0.9))
             }
         }
+    }
+}
+
+// MARK: - Transpose Control
+
+struct TransposeControl: View {
+    @Binding var transpose: Int
+    
+    private let semitoneNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Text("Transpose")
+                .font(.caption2)
+                .foregroundColor(.gray)
+            
+            HStack(spacing: 8) {
+                // Кнопка минус
+                Button(action: {
+                    if transpose > -12 {
+                        transpose -= 1
+                    }
+                }) {
+                    Image(systemName: "minus.circle.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(.orange.opacity(0.8))
+                }
+                
+                // Значение
+                VStack(spacing: 0) {
+                    Text(transpose >= 0 ? "+\(transpose)" : "\(transpose)")
+                        .font(.system(size: 16, weight: .bold, design: .monospaced))
+                        .foregroundColor(transpose == 0 ? .white : .orange)
+                    
+                    Text(transposeKeyName)
+                        .font(.system(size: 9))
+                        .foregroundColor(.gray)
+                }
+                .frame(width: 44)
+                
+                // Кнопка плюс
+                Button(action: {
+                    if transpose < 12 {
+                        transpose += 1
+                    }
+                }) {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(.orange.opacity(0.8))
+                }
+            }
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.white.opacity(0.05))
+        )
+    }
+    
+    private var transposeKeyName: String {
+        // Показываем название ноты относительно D (типичная тональность для рилов)
+        let baseNote = 2 // D
+        let newNote = (baseNote + transpose + 12) % 12
+        return "D → \(semitoneNames[newNote])"
     }
 }
 

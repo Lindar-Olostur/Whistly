@@ -42,6 +42,16 @@ class MIDISequencer {
     }
     var isLooping: Bool = true
     
+    // Транспонирование (в полутонах, -12 до +12)
+    var transpose: Int = 0 {
+        didSet {
+            // Перезагружаем текущий трек с новым транспонированием
+            if !abcTunes.isEmpty {
+                reloadCurrentTune()
+            }
+        }
+    }
+    
     // Таймер для отслеживания позиции
     private var positionTimer: Timer?
     
@@ -149,8 +159,8 @@ class MIDISequencer {
         selectedTuneIndex = index
         let tune = abcTunes[index]
         
-        // Конвертируем в MIDIFileInfo
-        midiInfo = ABCParser.toMIDIFileInfo(tune)
+        // Конвертируем в MIDIFileInfo (с учётом транспонирования для отображения)
+        midiInfo = ABCParser.toMIDIFileInfo(tune, transpose: transpose)
         
         // Создаём секвенс из нот
         createSequenceFromNotes(tune.notes)
@@ -160,7 +170,30 @@ class MIDISequencer {
         startMeasure = 1
         endMeasure = midiInfo?.totalMeasures ?? 1
         
-        print("Loaded tune: \(tune.title) - \(tune.notes.count) notes")
+        print("Loaded tune: \(tune.title) - \(tune.notes.count) notes, transpose: \(transpose)")
+    }
+    
+    /// Перезагружает текущую мелодию (при смене транспонирования)
+    private func reloadCurrentTune() {
+        let wasPlaying = isPlaying
+        let currentPos = currentBeat
+        
+        if wasPlaying {
+            pause()
+        }
+        
+        if !abcTunes.isEmpty {
+            loadTune(at: selectedTuneIndex)
+        }
+        
+        // Восстанавливаем позицию
+        if currentPos > 0 {
+            setPosition(min(currentPos, endBeat))
+        }
+        
+        if wasPlaying {
+            play()
+        }
     }
     
     // MARK: - Create Music Sequence
@@ -193,11 +226,14 @@ class MIDISequencer {
         MusicSequenceNewTrack(seq, &track)
         guard let musicTrack = track else { return }
         
-        // Добавляем ноты
+        // Добавляем ноты с транспонированием
         for note in notes {
+            // Применяем транспонирование
+            let transposedPitch = max(0, min(127, Int(note.pitch) + transpose))
+            
             var noteMessage = MIDINoteMessage(
                 channel: note.channel,
-                note: note.pitch,
+                note: UInt8(transposedPitch),
                 velocity: note.velocity,
                 releaseVelocity: 0,
                 duration: Float32(note.duration)
@@ -305,8 +341,14 @@ class MIDISequencer {
     func play() {
         guard let player = musicPlayer else { return }
         
-        MusicPlayerSetTime(player, startBeat)
-        currentBeat = startBeat
+        // Если текущая позиция за пределами диапазона или в самом конце - начинаем сначала
+        if currentBeat < startBeat || currentBeat >= endBeat {
+            MusicPlayerSetTime(player, startBeat)
+            currentBeat = startBeat
+        } else {
+            // Продолжаем с текущей позиции
+            MusicPlayerSetTime(player, currentBeat)
+        }
         
         MusicPlayerStart(player)
         isPlaying = true
