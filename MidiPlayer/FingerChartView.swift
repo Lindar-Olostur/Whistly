@@ -46,6 +46,24 @@ enum WhistleKey: String, CaseIterable {
         case .D_low: return "Low D"
         }
     }
+    
+    /// Номер ноты тоники (0-11, где C=0, D=2, и т.д.)
+    var tonicNote: Int {
+        switch self {
+        case .Eb, .Eb_low:    return 3   // Eb
+        case .D_high, .D_low: return 2   // D
+        case .Csharp:         return 1   // C#
+        case .C:              return 0   // C
+        case .B:              return 11  // B
+        case .Bb:             return 10  // Bb
+        case .A:              return 9   // A
+        case .Ab:             return 8   // Ab
+        case .G:              return 7   // G
+        case .Fsharp:         return 6   // F#
+        case .F:              return 5   // F
+        case .E:              return 4   // E
+        }
+    }
 }
 
 // MARK: - Whistle Scale Degree
@@ -74,72 +92,38 @@ enum WhistleScaleDegree: String, CaseIterable {
 
 struct WhistleConverter {
     
-    /// Преобразует MIDI pitch в ступень, основываясь на тональности мелодии
-    /// Если тональность мелодии совпадает с тональностью вистла - аппликатуры стандартные
-    static func pitchToDegree(_ pitch: UInt8, tuneKey: String) -> WhistleScaleDegree? {
+    /// Преобразует MIDI pitch в ступень на выбранном вистле
+    /// Возвращает nil если нота не может быть сыграна на данном вистле (хроматическая нота)
+    static func pitchToDegree(_ pitch: UInt8, whistleKey: WhistleKey) -> WhistleScaleDegree? {
         let midiPitch = Int(pitch)
+        let pitchNote = midiPitch % 12  // Нота без октавы (0-11)
+        let whistleTonicNote = whistleKey.tonicNote
         
-        // Получаем тонику мелодии (MIDI номер)
-        let tonicMidi = tonicFromKey(tuneKey)
+        // Вычисляем интервал от тоники вистла (0-11)
+        var interval = pitchNote - whistleTonicNote
+        if interval < 0 {
+            interval += 12
+        }
         
-        // Вычисляем интервал от тоники мелодии
-        let interval = midiPitch - tonicMidi
-        let normalizedInterval = ((interval % 12) + 12) % 12
-        let octave = interval >= 12 ? 1 : 0
+        // Определяем октаву: строчные буквы в ABC = верхняя октава
+        // Для ABC: D=62(4), d=74(5) - разница в 12
+        // Считаем что ноты ниже определённого порога - нижняя октава, выше - верхняя
+        // Типичный диапазон ABC мелодий: ~60-86
+        let isUpperOctave = midiPitch >= 72  // От C5 и выше - верхняя октава
         
-        switch normalizedInterval {
-        case 0:  return octave == 0 ? .I : .I2
-        case 2:  return octave == 0 ? .II : .II2
-        case 4:  return octave == 0 ? .III : .III2
-        case 5:  return octave == 0 ? .IV : .IV2
-        case 7:  return octave == 0 ? .V : .V2
-        case 9:  return octave == 0 ? .VI : .VI2
+        // Только диатонические ступени мажорной гаммы
+        switch interval {
+        case 0:  return isUpperOctave ? .I2 : .I
+        case 2:  return isUpperOctave ? .II2 : .II
+        case 4:  return isUpperOctave ? .III2 : .III
+        case 5:  return isUpperOctave ? .IV2 : .IV
+        case 7:  return isUpperOctave ? .V2 : .V
+        case 9:  return isUpperOctave ? .VI2 : .VI
         case 10: return .flatVII
-        case 11: return octave == 0 ? .VII : .VII2
-        default: return findClosestDegree(normalizedInterval: normalizedInterval, octave: octave)
-        }
-    }
-    
-    /// Получает MIDI номер тоники из названия тональности
-    private static func tonicFromKey(_ key: String) -> Int {
-        let key = key.trimmingCharacters(in: .whitespaces)
-        guard !key.isEmpty else { return 74 } // D5 по умолчанию
-        
-        let firstChar = String(key.prefix(1)).uppercased()
-        var semitone: Int
-        
-        // Базовые ноты (в 5-й октаве)
-        switch firstChar {
-        case "C": semitone = 72  // C5
-        case "D": semitone = 74  // D5
-        case "E": semitone = 76  // E5
-        case "F": semitone = 77  // F5
-        case "G": semitone = 67  // G4 (ниже октавой, типично для вистла)
-        case "A": semitone = 69  // A4
-        case "B": semitone = 71  // B4
-        default: semitone = 74  // D5
-        }
-        
-        // Проверяем модификатор
-        if key.count >= 2 {
-            let second = key[key.index(key.startIndex, offsetBy: 1)]
-            if second == "#" {
-                semitone += 1
-            } else if second.lowercased() == "b" && key.prefix(2).uppercased() != "BB" {
-                semitone -= 1
-            }
-        }
-        
-        return semitone
-    }
-    
-    private static func findClosestDegree(normalizedInterval: Int, octave: Int) -> WhistleScaleDegree? {
-        switch normalizedInterval {
-        case 1:  return octave == 0 ? .II : .II2
-        case 3:  return octave == 0 ? .III : .III2
-        case 6:  return octave == 0 ? .V : .V2
-        case 8:  return octave == 0 ? .V : .V2
-        default: return nil
+        case 11: return isUpperOctave ? .VII2 : .VII
+        default:
+            // Хроматические ноты - нельзя сыграть стандартной аппликатурой
+            return nil
         }
     }
     
@@ -159,7 +143,7 @@ struct FingerChartView: View {
     let startMeasure: Int
     let endMeasure: Int
     let isPlaying: Bool
-    let tuneKey: String
+    let whistleKey: WhistleKey
     
     // Настройки
     private let noteHeight: CGFloat = 6
@@ -227,7 +211,7 @@ struct FingerChartView: View {
                         totalWidth: totalContentWidth,
                         offset: min(max(0, offset), maxOffset),
                         isPlaying: isPlaying,
-                        tuneKey: tuneKey
+                        whistleKey: whistleKey
                     )
                     .frame(height: fingeringRowHeight)
                     .clipped()
@@ -370,7 +354,7 @@ struct FingeringRowView: View {
     let totalWidth: CGFloat
     let offset: CGFloat
     let isPlaying: Bool
-    let tuneKey: String
+    let whistleKey: WhistleKey
     
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -387,7 +371,7 @@ struct FingeringRowView: View {
                     note: note,
                     isActive: isActive,
                     width: width,
-                    tuneKey: tuneKey
+                    whistleKey: whistleKey
                 )
                 .frame(width: width, height: rowHeight - 4)
                 .offset(x: x, y: 2)
@@ -413,10 +397,10 @@ struct FingeringNoteView: View {
     let note: MIDINote
     let isActive: Bool
     let width: CGFloat
-    let tuneKey: String
+    let whistleKey: WhistleKey
     
     var body: some View {
-        if let degree = WhistleConverter.pitchToDegree(note.pitch, tuneKey: tuneKey) {
+        if let degree = WhistleConverter.pitchToDegree(note.pitch, whistleKey: whistleKey) {
             VStack(spacing: 1) {
                 Image(degree.imageName)
                     .resizable()
@@ -581,7 +565,7 @@ struct NoteViewCompact: View {
             startMeasure: 1,
             endMeasure: 8,
             isPlaying: true,
-            tuneKey: "D"
+            whistleKey: .D_high
         )
         .frame(height: 280)
         .padding()

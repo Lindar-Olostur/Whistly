@@ -130,7 +130,7 @@ struct ContentView: View {
                             startMeasure: sequencer.startMeasure,
                             endMeasure: sequencer.endMeasure,
                             isPlaying: sequencer.isPlaying,
-                            tuneKey: currentTuneKey
+                            whistleKey: whistleKey
                         )
                         .frame(height: 220)
                         .padding(.horizontal, 12)
