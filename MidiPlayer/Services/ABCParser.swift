@@ -467,7 +467,7 @@ class ABCParser {
     /// Разворачивает репризы и альтернативные концовки
     private static func expandRepeats(_ body: String) -> String {
         var result = ""
-        var i = body.startIndex
+        _ = body.startIndex
         
         // Разбиваем на секции по ||
         let sections = body.components(separatedBy: "||")
@@ -502,7 +502,7 @@ class ABCParser {
                     let ending2Patterns = ["|2", "[2", "2"]
                     
                     var firstEndingStart: String.Index?
-                    var secondEndingStart: String.Index?
+                    var _: String.Index?
                     
                     for pattern in ending1Patterns {
                         if let range = repeatContent.range(of: pattern) {

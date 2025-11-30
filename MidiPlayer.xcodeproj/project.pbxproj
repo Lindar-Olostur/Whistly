@@ -11,6 +11,12 @@
 		5D1170412EDA2C4900F3B1A1 /* AudioKitEX in Frameworks */ = {isa = PBXBuildFile; productRef = 5D1170402EDA2C4900F3B1A1 /* AudioKitEX */; };
 		5D25BDC02EDC1866000A4BA8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D25BDBF2EDC1866000A4BA8 /* AppDelegate.swift */; };
 		5D25BDC32EDC1AF2000A4BA8 /* OrientationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D25BDC22EDC1AF2000A4BA8 /* OrientationService.swift */; };
+		5D25BDCB2EDC3200000A4BA8 /* PlaybackControlsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D25BDC62EDC3200000A4BA8 /* PlaybackControlsSectionView.swift */; };
+		5D25BDCC2EDC3200000A4BA8 /* PositionInfoSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D25BDC72EDC3200000A4BA8 /* PositionInfoSectionView.swift */; };
+		5D25BDCD2EDC3200000A4BA8 /* TempoAndTransposeSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D25BDC82EDC3200000A4BA8 /* TempoAndTransposeSectionView.swift */; };
+		5D25BDCE2EDC3200000A4BA8 /* HeaderSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D25BDC52EDC3200000A4BA8 /* HeaderSectionView.swift */; };
+		5D25BDCF2EDC3200000A4BA8 /* TuneAndWhistleSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D25BDC92EDC3200000A4BA8 /* TuneAndWhistleSectionView.swift */; };
+		5D25BDD12EDC3645000A4BA8 /* KeyCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D25BDD02EDC3645000A4BA8 /* KeyCalculator.swift */; };
 		5D6339152EDB623000E5C6E5 /* WhistleModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6338F72EDB623000E5C6E5 /* WhistleModels.swift */; };
 		5D6339162EDB623000E5C6E5 /* ABCParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6338FD2EDB623000E5C6E5 /* ABCParser.swift */; };
 		5D6339172EDB623000E5C6E5 /* KeyDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6338FE2EDB623000E5C6E5 /* KeyDetector.swift */; };
@@ -38,6 +44,12 @@
 /* Begin PBXFileReference section */
 		5D25BDBF2EDC1866000A4BA8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5D25BDC22EDC1AF2000A4BA8 /* OrientationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationService.swift; sourceTree = "<group>"; };
+		5D25BDC52EDC3200000A4BA8 /* HeaderSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderSectionView.swift; sourceTree = "<group>"; };
+		5D25BDC62EDC3200000A4BA8 /* PlaybackControlsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackControlsSectionView.swift; sourceTree = "<group>"; };
+		5D25BDC72EDC3200000A4BA8 /* PositionInfoSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionInfoSectionView.swift; sourceTree = "<group>"; };
+		5D25BDC82EDC3200000A4BA8 /* TempoAndTransposeSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempoAndTransposeSectionView.swift; sourceTree = "<group>"; };
+		5D25BDC92EDC3200000A4BA8 /* TuneAndWhistleSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TuneAndWhistleSectionView.swift; sourceTree = "<group>"; };
+		5D25BDD02EDC3645000A4BA8 /* KeyCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCalculator.swift; sourceTree = "<group>"; };
 		5D6338F72EDB623000E5C6E5 /* WhistleModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhistleModels.swift; sourceTree = "<group>"; };
 		5D6338F92EDB623000E5C6E5 /* ievanpolkka.abc */ = {isa = PBXFileReference; lastKnownFileType = text; path = ievanpolkka.abc; sourceTree = "<group>"; };
 		5D6338FA2EDB623000E5C6E5 /* silverspear.abc */ = {isa = PBXFileReference; lastKnownFileType = text; path = silverspear.abc; sourceTree = "<group>"; };
@@ -86,6 +98,19 @@
 			path = Orientation;
 			sourceTree = "<group>";
 		};
+		5D25BDCA2EDC3200000A4BA8 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				5D25BDC52EDC3200000A4BA8 /* HeaderSectionView.swift */,
+				5D63390F2EDB623000E5C6E5 /* UIComponents.swift */,
+				5D25BDC62EDC3200000A4BA8 /* PlaybackControlsSectionView.swift */,
+				5D25BDC72EDC3200000A4BA8 /* PositionInfoSectionView.swift */,
+				5D25BDC82EDC3200000A4BA8 /* TempoAndTransposeSectionView.swift */,
+				5D25BDC92EDC3200000A4BA8 /* TuneAndWhistleSectionView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		5D6338F82EDB623000E5C6E5 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -107,6 +132,7 @@
 		5D6339012EDB623000E5C6E5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				5D25BDD02EDC3645000A4BA8 /* KeyCalculator.swift */,
 				5D25BDC12EDC1AD7000A4BA8 /* Orientation */,
 				5D6338FD2EDB623000E5C6E5 /* ABCParser.swift */,
 				5D6338FE2EDB623000E5C6E5 /* KeyDetector.swift */,
@@ -143,10 +169,10 @@
 		5D6339102EDB623000E5C6E5 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5D25BDCA2EDC3200000A4BA8 /* Components */,
 				5D6339082EDB623000E5C6E5 /* FingerChart */,
 				5D63390D2EDB623000E5C6E5 /* PianoRoll */,
 				5D63390E2EDB623000E5C6E5 /* ContentView.swift */,
-				5D63390F2EDB623000E5C6E5 /* UIComponents.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -269,6 +295,12 @@
 				5D25BDC32EDC1AF2000A4BA8 /* OrientationService.swift in Sources */,
 				5D6339182EDB623000E5C6E5 /* MIDIParser.swift in Sources */,
 				5D6339192EDB623000E5C6E5 /* MIDISequencer.swift in Sources */,
+				5D25BDCB2EDC3200000A4BA8 /* PlaybackControlsSectionView.swift in Sources */,
+				5D25BDCC2EDC3200000A4BA8 /* PositionInfoSectionView.swift in Sources */,
+				5D25BDD12EDC3645000A4BA8 /* KeyCalculator.swift in Sources */,
+				5D25BDCD2EDC3200000A4BA8 /* TempoAndTransposeSectionView.swift in Sources */,
+				5D25BDCE2EDC3200000A4BA8 /* HeaderSectionView.swift in Sources */,
+				5D25BDCF2EDC3200000A4BA8 /* TuneAndWhistleSectionView.swift in Sources */,
 				5D63391A2EDB623000E5C6E5 /* FingerChartView.swift in Sources */,
 				5D63391B2EDB623000E5C6E5 /* FingeringImageView.swift in Sources */,
 				5D63391C2EDB623000E5C6E5 /* FingeringRowView.swift in Sources */,

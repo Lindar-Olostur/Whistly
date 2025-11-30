@@ -128,6 +128,66 @@ struct WhistleConverter {
         let note = Int(pitch) % 12
         return "\(noteNames[note])\(octave)"
     }
+
+    /// Находит все тональности, в которых мелодия может быть полностью сыграна на данном вистле
+    /// - Parameters:
+    ///   - notes: оригинальные ноты мелодии
+    ///   - whistleKey: строй вистла
+    ///   - baseKey: базовая тональность мелодии (для расчета результирующих тональностей)
+    /// - Returns: массив уникальных тональностей мелодии, где все ноты playable на данном вистле
+    static func findPlayableKeys(for notes: [MIDINote], whistleKey: WhistleKey, baseKey: String) -> [String] {
+        var playableKeysSet = Set<String>()
+
+        // Извлекаем базовую ноту из тональности
+        let baseNoteIndex = noteNameToIndex(baseKey)
+
+        // Проверяем каждое возможное транспонирование (-12 до +12 полутонов)
+        for transpose in -12...12 {
+            // Проверяем, playable ли все ноты при этом транспонировании
+            let allPlayable = notes.allSatisfy { note in
+                let transposedPitch = max(0, min(127, Int(note.pitch) + transpose))
+                return pitchToFingering(UInt8(transposedPitch), whistleKey: whistleKey) != nil
+            }
+
+            if allPlayable {
+                // Рассчитываем результирующую тональность мелодии
+                let newNoteIndex = (baseNoteIndex + transpose + 12) % 12
+                let newKey = indexToNoteName(newNoteIndex, isMinor: baseKey.lowercased().hasSuffix("m"))
+                playableKeysSet.insert(newKey)
+            }
+        }
+
+        // Возвращаем отсортированный массив уникальных тональностей
+        return Array(playableKeysSet).sorted()
+    }
+
+    /// Преобразует название ноты в индекс (C=0, C#=1, D=2, ...)
+    private static func noteNameToIndex(_ noteName: String) -> Int {
+        let normalizedName = noteName.replacingOccurrences(of: "♭", with: "b")
+        let noteMap: [String: Int] = [
+            "C": 0, "C#": 1, "Db": 1, "C♯": 1, "D": 2, "D#": 3, "Eb": 3, "D♯": 3, "E": 4,
+            "F": 5, "F#": 6, "Gb": 6, "F♯": 6, "G": 7, "G#": 8, "Ab": 8, "G♯": 8, "A": 9,
+            "A#": 10, "Bb": 10, "A♯": 10, "B": 11
+        ]
+
+        // Извлекаем ноту из тональности (убираем суффиксы)
+        var baseNote = normalizedName
+        for suffix in ["m", "min", "maj", "dor", "phr", "lyd", "mix", "loc"] {
+            if baseNote.lowercased().hasSuffix(suffix) {
+                baseNote = String(baseNote.dropLast(suffix.count))
+                break
+            }
+        }
+
+        return noteMap[baseNote] ?? 0
+    }
+
+    /// Преобразует индекс в название ноты
+    private static func indexToNoteName(_ index: Int, isMinor: Bool) -> String {
+        let noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+        let noteName = noteNames[(index + 12) % 12]
+        return isMinor ? "\(noteName)m" : noteName
+    }
 }
 
 // MARK: - Key Converter

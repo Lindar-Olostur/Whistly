@@ -39,7 +39,7 @@ struct PianoKeysCompactView: View {
     }
     
     private func pitchToName(_ pitch: UInt8) -> String {
-        let noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+        _ = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
         let note = Int(pitch) % 12
         if note == 0 {
             let octave = Int(pitch) / 12 - 1
