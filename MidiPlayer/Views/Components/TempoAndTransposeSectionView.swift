@@ -9,8 +9,6 @@ import SwiftUI
 
 struct TempoAndTransposeSectionView: View {
     @Binding var tempo: Double
-    @Binding var transpose: Int
-    let originalKey: String
 
     var body: some View {
         HStack(spacing: 20) {
@@ -31,12 +29,6 @@ struct TempoAndTransposeSectionView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-
-            // Транспонирование
-            TransposeControl(
-                transpose: $transpose,
-                originalKey: originalKey
-            )
         }
         .padding(.horizontal, 20)
     }
@@ -44,9 +36,8 @@ struct TempoAndTransposeSectionView: View {
 
 #Preview {
     TempoAndTransposeSectionView(
-        tempo: .constant(120),
-        transpose: .constant(0),
-        originalKey: "C"
+        tempo: .constant(120)
     )
 }
+
 

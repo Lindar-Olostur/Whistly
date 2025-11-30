@@ -69,10 +69,7 @@ struct ContentView: View {
         }
         .onChange(of: whistleKey) { _, _ in
             updatePlayableKeys()
-            // Оптимизируем октаву при смене свистля, если пользователь не менял настройки
-            if sequencer.transpose == 0 {
-                optimizeOctaveForCurrentTune()
-            }
+            optimizeOctaveForCurrentTune()
         }
     }
     
@@ -137,11 +134,9 @@ struct ContentView: View {
                 tempo: sequencer.tempo
             )
                 
-                // Слайдер темпа и транспонирование
+                // Слайдер темпа
             TempoAndTransposeSectionView(
-                tempo: $sequencer.tempo,
-                transpose: $sequencer.transpose,
-                originalKey: currentTuneKey
+                tempo: $sequencer.tempo
             )
                 
                 Spacer()
@@ -305,11 +300,8 @@ struct ContentView: View {
             whistleKey: whistleKey
         )
 
-        // Устанавливаем оптимальную октаву только если текущий transpose = 0
-        // (т.е. если пользователь еще не менял настройки вручную)
-        if sequencer.transpose == 0 {
-            sequencer.transpose = optimalTranspose
-        }
+        // Устанавливаем оптимальную октаву
+        sequencer.transpose = optimalTranspose
     }
 
     private func updatePlayableKeys() {
