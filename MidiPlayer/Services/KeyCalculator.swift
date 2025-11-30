@@ -68,11 +68,11 @@ struct KeyCalculator {
         let maxPitch = Int(pitchRange.max)
         let optimalCenter = (minPitch + maxPitch) / 2
 
-        // Находим оптимальный октавный сдвиг (-2..+2 октавы)
+        // Находим оптимальный октавный сдвиг (предпочитаем более высокие октавы для свистлей)
         var bestTranspose = baseTranspose
-        var bestScore = 0
+        var bestScore = Int.min
 
-        for octaveShift in -2...2 {
+        for octaveShift in 0...4 {  // Только положительные сдвиги (выше или та же октава)
             let totalTranspose = baseTranspose + octaveShift * 12
             var inRangeCount = 0
 
@@ -86,7 +86,11 @@ struct KeyCalculator {
             // Также учитываем расстояние от центра диапазона
             let avgPitch = notes.map { Int($0.pitch) + totalTranspose }.reduce(0, +) / max(1, notes.count)
             let centerDistance = abs(avgPitch - optimalCenter)
-            let score = inRangeCount * 100 - centerDistance
+
+            // Сильный бонус за более высокие октавы (свистли - высокие инструменты)
+            let heightBonus = octaveShift * 200  // Увеличили бонус
+
+            let score = inRangeCount * 100 - centerDistance + heightBonus
 
             if score > bestScore {
                 bestScore = score

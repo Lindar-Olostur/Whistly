@@ -64,3 +64,4 @@ struct PositionInfoSectionView: View {
         tempo: 120
     )
 }
+

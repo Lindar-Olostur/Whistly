@@ -66,26 +66,26 @@ enum WhistleKey: String, CaseIterable {
     }
 
     /// Диапазон свистля в MIDI нотах (minPitch, maxPitch)
-    /// Обычно тоника + 1 октава + несколько полутонов
+    /// Реалистичные диапазоны для tin whistles (высокие октавы)
     var pitchRange: (min: UInt8, max: UInt8) {
         switch self {
-        // Высокие свистли (тоника + ~1.75 октавы)
-        case .Eb:      return (51, 77)  // Eb3 - F5
-        case .D_high:  return (50, 71)  // D3 - B4
-        case .Csharp:  return (49, 70)  // C#3 - A#4
-        case .C:       return (48, 69)  // C3 - A4
-        case .B:       return (47, 68)  // B2 - G#4
-        case .Bb:      return (46, 67)  // A#2 - G4
-        case .A:       return (45, 66)  // A2 - F#4
-        case .Ab:      return (44, 65)  // G#2 - F4
-        case .G:       return (43, 64)  // G2 - E4
-        case .Fsharp:  return (42, 63)  // F#2 - D#4
-        case .F:       return (41, 62)  // F2 - D4
-        case .E:       return (40, 61)  // E2 - C#4
+        // Высокие свистли (стандартные концертные октавы)
+        case .Eb:      return (63, 89)  // Eb4 - Eb6
+        case .D_high:  return (62, 83)  // D4 - B5  (стандартный D whistle)
+        case .Csharp:  return (61, 82)  // C#4 - A#5
+        case .C:       return (60, 81)  // C4 - A5
+        case .B:       return (59, 80)  // B3 - G#5
+        case .Bb:      return (58, 79)  // A#3 - G5
+        case .A:       return (57, 78)  // A3 - F#5
+        case .Ab:      return (56, 77)  // G#3 - F5
+        case .G:       return (55, 76)  // G3 - E5
+        case .Fsharp:  return (54, 75)  // F#3 - D#5
+        case .F:       return (53, 74)  // F3 - D5
+        case .E:       return (52, 73)  // E3 - C#5
 
-        // Низкие свистли (тоника + ~1.75 октавы, но на октаву ниже)
-        case .Eb_low:  return (39, 65)  // Eb2 - F4
-        case .D_low:   return (38, 59)  // D2 - B3
+        // Низкие свистли (на октаву ниже стандартных)
+        case .Eb_low:  return (63, 89)  // Eb3 - F5
+        case .D_low:   return (62, 83)  // D3 - B4
         }
     }
 }
@@ -107,8 +107,7 @@ enum WhistleScaleDegree: String, CaseIterable {
     case IV2 = "IV²"
     case V2 = "V²"
     case VI2 = "VI²"
-    case VII2 = "VII²"
-    
+
     var imageName: String { rawValue }
 }
 
@@ -129,8 +128,11 @@ struct WhistleConverter {
             interval += 12
         }
         
-        // Определяем октаву: от C5 (72) и выше - верхняя октава
-        let isUpperOctave = midiPitch >= 72
+        // Определяем октаву относительно диапазона свистля
+        // Если нота в верхней половине диапазона - используем вторую октаву аппликатур
+        let pitchRange = whistleKey.pitchRange
+        let rangeCenter = (Int(pitchRange.min) + Int(pitchRange.max)) / 2
+        let isUpperOctave = midiPitch >= rangeCenter
         
         // Только диатонические ступени мажорной гаммы
         switch interval {
@@ -141,7 +143,7 @@ struct WhistleConverter {
         case 7:  return isUpperOctave ? .V2 : .V
         case 9:  return isUpperOctave ? .VI2 : .VI
         case 10: return .flatVII  // ♭VII только в первой октаве
-        case 11: return isUpperOctave ? .VII2 : .VII
+        case 11: return .VII  // VII всегда в первой октаве (все клапаны открыты)
         default: return nil  // Хроматические ноты
         }
     }
@@ -159,6 +161,7 @@ struct WhistleConverter {
     ///   - whistleKey: строй вистла
     ///   - baseKey: базовая тональность мелодии (для расчета результирующих тональностей)
     /// - Returns: массив уникальных тональностей мелодии, где все ноты playable на данном вистле и в его диапазоне
+    /// TODO еще момент: есть мелодии у которых очень узкий диапазон и на одном вистле их можно сыграть как в пеовой октаве так и с передувом. но в предложенных тональностях только один вариант. нам надо различать такие варианты и показывать оба
     static func findPlayableKeys(for notes: [MIDINote], whistleKey: WhistleKey, baseKey: String) -> [String] {
         var playableKeysSet = Set<String>()
 

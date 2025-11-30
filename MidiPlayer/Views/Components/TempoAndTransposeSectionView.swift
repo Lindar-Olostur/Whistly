@@ -49,3 +49,4 @@ struct TempoAndTransposeSectionView: View {
         originalKey: "C"
     )
 }
+
