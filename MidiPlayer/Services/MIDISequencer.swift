@@ -26,7 +26,11 @@ class MIDISequencer {
     var currentBeat: Double = 0
     var midiInfo: MIDIFileInfo?
     
-    // ABC данные
+    // Оригинальные данные MIDI (без транспонирования)
+    private var originalMIDIInfo: MIDIFileInfo?
+    private var originalMIDIURL: URL?
+    
+    // ABC данные //TODO брать только первый
     var abcTunes: [ABCTune] = []
     var selectedTuneIndex: Int = 0
     
@@ -48,6 +52,9 @@ class MIDISequencer {
             // Перезагружаем текущий трек с новым транспонированием
             if !abcTunes.isEmpty {
                 reloadCurrentTune()
+            } else if let originalInfo = originalMIDIInfo, let url = originalMIDIURL {
+                // Для MIDI файлов пересоздаём с транспонированием
+                reloadMIDIFile(originalInfo: originalInfo, url: url)
             }
         }
     }
@@ -116,22 +123,84 @@ class MIDISequencer {
     
     func loadMIDIFile(url: URL) {
         // Парсим информацию о MIDI для визуализации
-        midiInfo = MIDIParser.parse(url: url)
-        
-        guard let info = midiInfo else {
+        guard let originalInfo = MIDIParser.parse(url: url) else {
             print("Failed to parse MIDI file")
             return
         }
         
-        // Загружаем через AudioToolbox
-        createSequenceFromMIDIFile(url: url)
+        // Сохраняем оригинальные данные
+        originalMIDIInfo = originalInfo
+        originalMIDIURL = url
+        
+        // Применяем транспонирование
+        reloadMIDIFile(originalInfo: originalInfo, url: url)
+    }
+    
+    private func reloadMIDIFile(originalInfo: MIDIFileInfo, url: URL) {
+        let wasPlaying = isPlaying
+        let currentPos = currentBeat
+        
+        // Сохраняем выделенную область
+        let savedStartMeasure = startMeasure
+        let savedEndMeasure = endMeasure
+        
+        if wasPlaying {
+            pause()
+        }
+        
+        // Применяем транспонирование к нотам для отображения
+        let transposedNotes = originalInfo.allNotes.map { note in
+            MIDINote(
+                pitch: UInt8(max(0, min(127, Int(note.pitch) + transpose))),
+                velocity: note.velocity,
+                startBeat: note.startBeat,
+                duration: note.duration,
+                channel: note.channel
+            )
+        }
+        
+        // Обновляем midiInfo с транспонированными нотами
+        let minPitch = transposedNotes.map { $0.pitch }.min() ?? originalInfo.minPitch
+        let maxPitch = transposedNotes.map { $0.pitch }.max() ?? originalInfo.maxPitch
+        
+        let trackInfo = MIDITrackInfo(
+            notes: transposedNotes,
+            minPitch: minPitch,
+            maxPitch: maxPitch,
+            totalBeats: originalInfo.totalBeats
+        )
+        
+        midiInfo = MIDIFileInfo(
+            tracks: [trackInfo],
+            allNotes: transposedNotes,
+            totalBeats: originalInfo.totalBeats,
+            beatsPerMeasure: originalInfo.beatsPerMeasure,
+            totalMeasures: originalInfo.totalMeasures,
+            tempo: originalInfo.tempo,
+            minPitch: minPitch,
+            maxPitch: maxPitch
+        )
+        
+        // Создаём секвенс с транспонированными нотами
+        createSequenceFromNotes(transposedNotes)
         
         // Устанавливаем параметры
-        tempo = info.tempo
-        startMeasure = 1
-        endMeasure = info.totalMeasures
+        tempo = originalInfo.tempo
         
-        print("MIDI loaded: \(info.allNotes.count) notes, \(info.totalMeasures) measures")
+        // Восстанавливаем выделенную область
+        startMeasure = min(savedStartMeasure, originalInfo.totalMeasures)
+        endMeasure = min(savedEndMeasure, originalInfo.totalMeasures)
+        
+        // Восстанавливаем позицию
+        if currentPos > 0 {
+            setPosition(min(currentPos, endBeat))
+        }
+        
+        if wasPlaying {
+            play()
+        }
+        
+        print("MIDI reloaded with transpose \(transpose): \(transposedNotes.count) notes")
     }
     
     // MARK: - Load ABC File

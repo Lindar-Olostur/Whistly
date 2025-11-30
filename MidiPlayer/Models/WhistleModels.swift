@@ -66,7 +66,7 @@ enum WhistleKey: String, CaseIterable {
     }
 }
 
-// MARK: - Whistle Scale Degree (только первая октава)
+// MARK: - Whistle Scale Degree
 
 enum WhistleScaleDegree: String, CaseIterable {
     case I = "I"
@@ -77,15 +77,15 @@ enum WhistleScaleDegree: String, CaseIterable {
     case VI = "VI"
     case flatVII = "♭VII"
     case VII = "VII"
+    case I2 = "I²"
+    case II2 = "II²"
+    case III2 = "III²"
+    case IV2 = "IV²"
+    case V2 = "V²"
+    case VI2 = "VI²"
+    case VII2 = "VII²"
     
     var imageName: String { rawValue }
-}
-
-// MARK: - Fingering Info (аппликатура + признак передува)
-
-struct FingeringInfo {
-    let degree: WhistleScaleDegree  // Базовая ступень (всегда первой октавы)
-    let needsOverblow: Bool          // Нужен передув (вторая октава)
 }
 
 // MARK: - Pitch to Degree Converter
@@ -94,7 +94,7 @@ struct WhistleConverter {
     
     /// Преобразует MIDI pitch в аппликатуру на выбранном вистле
     /// Возвращает nil если нота не может быть сыграна на данном вистле (хроматическая нота)
-    static func pitchToFingering(_ pitch: UInt8, whistleKey: WhistleKey) -> FingeringInfo? {
+    static func pitchToFingering(_ pitch: UInt8, whistleKey: WhistleKey) -> WhistleScaleDegree? {
         let midiPitch = Int(pitch)
         let pitchNote = midiPitch % 12  // Нота без октавы (0-11)
         let whistleTonicNote = whistleKey.tonicNote
@@ -105,25 +105,21 @@ struct WhistleConverter {
             interval += 12
         }
         
-        // Определяем октаву: от C5 (72) и выше - верхняя октава (нужен передув)
-        let needsOverblow = midiPitch >= 72
+        // Определяем октаву: от C5 (72) и выше - верхняя октава
+        let isUpperOctave = midiPitch >= 72
         
         // Только диатонические ступени мажорной гаммы
-        let degree: WhistleScaleDegree?
         switch interval {
-        case 0:  degree = .I
-        case 2:  degree = .II
-        case 4:  degree = .III
-        case 5:  degree = .IV
-        case 7:  degree = .V
-        case 9:  degree = .VI
-        case 10: degree = .flatVII
-        case 11: degree = .VII
-        default: degree = nil  // Хроматические ноты
+        case 0:  return isUpperOctave ? .I2 : .I
+        case 2:  return isUpperOctave ? .II2 : .II
+        case 4:  return isUpperOctave ? .III2 : .III
+        case 5:  return isUpperOctave ? .IV2 : .IV
+        case 7:  return isUpperOctave ? .V2 : .V
+        case 9:  return isUpperOctave ? .VI2 : .VI
+        case 10: return .flatVII  // ♭VII только в первой октаве
+        case 11: return isUpperOctave ? .VII2 : .VII
+        default: return nil  // Хроматические ноты
         }
-        
-        guard let deg = degree else { return nil }
-        return FingeringInfo(degree: deg, needsOverblow: needsOverblow)
     }
     
     static func pitchToNoteName(_ pitch: UInt8) -> String {

@@ -384,3 +384,54 @@ struct QuickSelectButton: View {
     }
 }
 
+// MARK: - Previews
+
+//#Preview("Control Button") {
+//    HStack {
+//        ControlButton(systemName: "play.fill", size: 20) {}
+//        ControlButton(systemName: "pause.fill", size: 20) {}
+//        ControlButton(systemName: "stop.fill", size: 20) {}
+//    }
+//    .padding()
+//    .background(Color.black)
+//}
+//
+//#Preview("View Mode Picker") {
+//    ViewModePicker(viewMode: .constant(.pianoRoll))
+//        .padding()
+//        .background(Color.black)
+//}
+//
+//#Preview("Whistle Key Picker") {
+//    WhistleKeyPicker(whistleKey: .constant(.D_high))
+//        .padding()
+//        .background(Color.black)
+//}
+
+#Preview("Transpose Control") {
+    @Previewable @State var transpose = 0
+    TransposeControl(transpose: $transpose, originalKey: "D")
+        .padding()
+        .background(Color.black)
+}
+//
+//#Preview("Measure Selector") {
+//    MeasureSelectorView(
+//        startMeasure: .constant(1),
+//        endMeasure: .constant(8),
+//        totalMeasures: 16
+//    )
+//    .padding()
+//    .background(Color.black)
+//}
+//
+//#Preview("Quick Select Button") {
+//    HStack {
+//        QuickSelectButton(title: "All") {}
+//        QuickSelectButton(title: "1-4") {}
+//        QuickSelectButton(title: "5-8") {}
+//    }
+//    .padding()
+//    .background(Color.black)
+//}
+

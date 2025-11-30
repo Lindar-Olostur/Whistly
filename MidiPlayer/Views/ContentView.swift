@@ -29,6 +29,7 @@ enum ViewMode: String, CaseIterable {
 // MARK: - Content View
 
 struct ContentView: View {
+    @State private var orientation = OrientationService()
     @State private var sequencer = MIDISequencer()
     @State private var sourceType: SourceType = .midi
     @State private var viewMode: ViewMode = .fingerChart
@@ -47,48 +48,82 @@ struct ContentView: View {
                 endPoint: .bottom
             )
             .ignoresSafeArea()
-            
-            VStack(spacing: 14) {
-                // Заголовок и переключатель источника
-                headerSection
-                
-                // Выбор мелодии для ABC и строй вистла
-                tuneAndWhistleSection
-                
-                // Переключатель режима отображения
-                ViewModePicker(viewMode: $viewMode)
-                    .padding(.horizontal, 20)
-                
-                // Piano Roll или Аппликатуры
-                visualizationSection
-                
-                // Выбор диапазона тактов
-                MeasureSelectorView(
-                    startMeasure: $sequencer.startMeasure,
-                    endMeasure: $sequencer.endMeasure,
-                    totalMeasures: sequencer.totalMeasures
-                )
-                .padding(.horizontal, 20)
-                
-                // Информация о позиции
-                positionInfoSection
-                
-                // Слайдер темпа и транспонирование
-                tempoAndTransposeSection
-                
-                Spacer()
-                
-                // Кнопки управления
-                playbackControlsSection
+            if orientation.currentOrientation == .portrait {
+                portrait
+            } else {
+                landscape
             }
         }
         .onAppear {
             loadSource(sourceType)
+            orientation.currentOrientation = UIDevice.current.orientation
+            orientation.setupOrientationObserver()
+            AppDelegate.orientationLock = .all
+        }
+        .onDisappear {
+            orientation.removeOrientationObserver()
+            AppDelegate.orientationLock = .portrait
         }
         .onChange(of: sequencer.selectedTuneIndex) { _, _ in
             updateWhistleKeyFromTune()
         }
     }
+    
+    @ViewBuilder
+    private var landscape: some View {
+        Color.clear.ignoresSafeArea()
+            .overlay {
+                visualizationSection
+                    .ignoresSafeArea(edges: .leading)
+            }
+            .onTapGesture {
+                withAnimation { sequencer.pause() }
+            }
+            .overlay(alignment: .bottom) {
+                if !sequencer.isPlaying {
+                    playbackControlsSection
+                        .transition(.move(edge: .bottom))
+                }
+            }
+    }
+    
+    @ViewBuilder
+    private var portrait: some View {
+        VStack(spacing: 14) {
+            // Заголовок и переключатель источника
+            headerSection
+            
+            // Выбор мелодии для ABC и строй вистла
+            tuneAndWhistleSection
+            
+            // Переключатель режима отображения
+            ViewModePicker(viewMode: $viewMode)
+                .padding(.horizontal, 20)
+            
+            // Piano Roll или Аппликатуры
+            visualizationSection
+            
+            // Выбор диапазона тактов
+            MeasureSelectorView(
+                startMeasure: $sequencer.startMeasure,
+                endMeasure: $sequencer.endMeasure,
+                totalMeasures: sequencer.totalMeasures
+            )
+            .padding(.horizontal, 20)
+            
+            // Информация о позиции
+            positionInfoSection
+            
+            // Слайдер темпа и транспонирование
+            tempoAndTransposeSection
+            
+            Spacer()
+            
+            // Кнопки управления
+            playbackControlsSection
+        }
+    }
+    
     
     // MARK: - View Sections
     
@@ -247,7 +282,8 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity)
             
-            // Транспонирование
+            // Транспонирование TODO
+            //При реальной транспонировки мелодии тональности идут не последовательно, какие то пропускаются, возврадение ктонике происходит за 6 шагов. почини
             TransposeControl(
                 transpose: $sequencer.transpose,
                 originalKey: currentTuneKey
@@ -269,9 +305,11 @@ struct ContentView: View {
             // Play/Pause
             Button(action: {
                 if sequencer.isPlaying {
-                    sequencer.pause()
+                    withAnimation { sequencer.pause() }
                 } else {
-                    sequencer.play()
+                    withAnimation {
+                        sequencer.play()
+                    }
                 }
             }) {
                 ZStack {
