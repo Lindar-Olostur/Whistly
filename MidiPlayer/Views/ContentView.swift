@@ -277,6 +277,10 @@ struct ContentView: View {
     private func loadSource(_ source: SourceType) {
         // sourceType уже установлен через binding в HeaderSectionView
         sequencer.stop()
+        
+        // Сбрасываем транспонирование при переключении источника
+        sequencer.transpose = 0
+        
         switch source {
         case .midi:
             sequencer.loadMIDIFile(named: "silverspear")

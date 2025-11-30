@@ -127,6 +127,10 @@ class MIDISequencer {
     }
     
     func loadMIDIFile(url: URL) {
+        // Очищаем ABC данные при загрузке MIDI
+        abcTunes = []
+        selectedTuneIndex = 0
+        
         // Парсим информацию о MIDI для визуализации
         guard let originalInfo = MIDIParser.parse(url: url) else {
             print("Failed to parse MIDI file")
@@ -231,6 +235,11 @@ class MIDISequencer {
     }
     
     func loadABCFile(url: URL) {
+        // Очищаем MIDI данные при загрузке ABC
+        originalMIDIInfo = nil
+        originalMIDIURL = nil
+        midiInfo = nil
+        
         guard let tunes = ABCParser.parseFile(url: url), !tunes.isEmpty else {
             print("Failed to parse ABC file")
             return
