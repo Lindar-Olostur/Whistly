@@ -65,8 +65,7 @@ enum WhistleKey: String, CaseIterable {
     /// Реалистичные диапазоны для tin whistles (высокие октавы)
     var pitchRange: (min: UInt8, max: UInt8) {
         switch self {
-        case .Eb:      return (63, 89)  // Eb4 - Eb6
-        case .D_high:  return (62, 83)  // D4 - B5  (стандартный D whistle)
+        case .D_high:  return (62, 83)  // D4 - B5
         case .Csharp:  return (61, 82)  // C#4 - A#5
         case .C:       return (60, 81)  // C4 - A5
         case .B:       return (59, 80)  // B3 - G#5
@@ -77,6 +76,7 @@ enum WhistleKey: String, CaseIterable {
         case .Fsharp:  return (54, 75)  // F#3 - D#5
         case .F:       return (53, 74)  // F3 - D5
         case .E:       return (52, 73)  // E3 - C#5
+        case .Eb:      return (51, 72)  // Eb3 - C5
         }
     }
 }

@@ -93,7 +93,7 @@ struct WhistleKeyPicker: View {
                 let keys = WhistleKey.allCases
                 if let index = keys.firstIndex(of: whistleKey) {
                     if index > 0 {
-                        whistleKey = keys[index - 1]
+                    whistleKey = keys[index - 1]
                     } else {
                         // Переход к последнему элементу
                         whistleKey = keys[keys.count - 1]
@@ -121,7 +121,7 @@ struct WhistleKeyPicker: View {
                 let keys = WhistleKey.allCases
                 if let index = keys.firstIndex(of: whistleKey) {
                     if index < keys.count - 1 {
-                        whistleKey = keys[index + 1]
+                    whistleKey = keys[index + 1]
                     } else {
                         // Переход к первому элементу
                         whistleKey = keys[0]

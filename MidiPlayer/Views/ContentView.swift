@@ -306,8 +306,8 @@ struct ContentView: View {
         )
 
         // Устанавливаем оптимальную октаву
-        sequencer.transpose = optimalTranspose
-    }
+            sequencer.transpose = optimalTranspose
+        }
 
     @discardableResult
     private func updatePlayableKeys() -> [String] {
