@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Whistle Key (строй вистла)
 
-/// Строй вистла от высокого Eb до Low D (хроматически)
+/// Строй вистла от высокого Eb до E (хроматически)
 enum WhistleKey: String, CaseIterable {
     // От высокого к низкому
     case Eb = "Eb"
@@ -24,8 +24,6 @@ enum WhistleKey: String, CaseIterable {
     case Fsharp = "F#"
     case F = "F"
     case E = "E"
-    case Eb_low = "Low Eb"
-    case D_low = "Low D"
     
     /// Название для отображения
     var displayName: String {
@@ -42,26 +40,24 @@ enum WhistleKey: String, CaseIterable {
         case .Fsharp: return "F#"
         case .F: return "F"
         case .E: return "E"
-        case .Eb_low: return "Low E♭"
-        case .D_low: return "Low D"
         }
     }
     
     /// Номер ноты тоники (0-11, где C=0, D=2, и т.д.)
     var tonicNote: Int {
         switch self {
-        case .Eb, .Eb_low:    return 3   // Eb
-        case .D_high, .D_low: return 2   // D
-        case .Csharp:         return 1   // C#
-        case .C:              return 0   // C
-        case .B:              return 11  // B
-        case .Bb:             return 10  // Bb
-        case .A:              return 9   // A
-        case .Ab:             return 8   // Ab
-        case .G:              return 7   // G
-        case .Fsharp:         return 6   // F#
-        case .F:              return 5   // F
-        case .E:              return 4   // E
+        case .Eb:      return 3   // Eb
+        case .D_high:  return 2   // D
+        case .Csharp:  return 1   // C#
+        case .C:       return 0   // C
+        case .B:       return 11  // B
+        case .Bb:      return 10  // Bb
+        case .A:       return 9   // A
+        case .Ab:      return 8   // Ab
+        case .G:       return 7   // G
+        case .Fsharp:  return 6   // F#
+        case .F:       return 5   // F
+        case .E:       return 4   // E
         }
     }
 
@@ -69,7 +65,6 @@ enum WhistleKey: String, CaseIterable {
     /// Реалистичные диапазоны для tin whistles (высокие октавы)
     var pitchRange: (min: UInt8, max: UInt8) {
         switch self {
-        // Высокие свистли (стандартные концертные октавы)
         case .Eb:      return (63, 89)  // Eb4 - Eb6
         case .D_high:  return (62, 83)  // D4 - B5  (стандартный D whistle)
         case .Csharp:  return (61, 82)  // C#4 - A#5
@@ -82,10 +77,6 @@ enum WhistleKey: String, CaseIterable {
         case .Fsharp:  return (54, 75)  // F#3 - D#5
         case .F:       return (53, 74)  // F3 - D5
         case .E:       return (52, 73)  // E3 - C#5
-
-        // Низкие свистли (на октаву ниже стандартных)
-        case .Eb_low:  return (63, 89)  // Eb3 - F5
-        case .D_low:   return (62, 83)  // D3 - B4
         }
     }
 }

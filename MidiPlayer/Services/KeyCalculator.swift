@@ -58,6 +58,7 @@ struct KeyCalculator {
     }
 
     /// Рассчитывает оптимальное транспонирование с учетом диапазона свистля
+    /// Транспонирует мелодию максимально близко к тонике вистла, обеспечивая что все ноты playable и в диапазоне
     static func optimalTranspose(from baseKey: String, to targetKey: String, notes: [MIDINote], whistleKey: WhistleKey) -> Int {
         // Сначала рассчитываем базовое транспонирование для смены тональности
         let baseTranspose = transposeNeeded(from: baseKey, to: targetKey)
@@ -66,31 +67,78 @@ struct KeyCalculator {
         let pitchRange = whistleKey.pitchRange
         let minPitch = Int(pitchRange.min)
         let maxPitch = Int(pitchRange.max)
-        let optimalCenter = (minPitch + maxPitch) / 2
+        let rangeCenter = (minPitch + maxPitch) / 2
+        
+        // Находим оптимальную октаву тоники вистла
+        // Тоника вистла должна быть близко к центру диапазона для оптимального звучания
+        let whistleTonicNote = whistleKey.tonicNote
+        
+        // Находим октаву тоники вистла, которая ближе всего к центру диапазона
+        var optimalTonicPitch = rangeCenter
+        var bestTonicDistance = Int.max
+        
+        for octave in 0...10 {
+            let tonicPitch = whistleTonicNote + 12 * octave
+            if tonicPitch >= minPitch && tonicPitch <= maxPitch {
+                let distance = abs(tonicPitch - rangeCenter)
+                if distance < bestTonicDistance {
+                    bestTonicDistance = distance
+                    optimalTonicPitch = tonicPitch
+                }
+            }
+        }
 
-        // Находим оптимальный октавный сдвиг (предпочитаем более высокие октавы для свистлей)
+        // Находим оптимальный октавный сдвиг
+        // Проверяем все возможные транспонирования (от -24 до +24 полутонов для учета октав)
         var bestTranspose = baseTranspose
         var bestScore = Int.min
 
-        for octaveShift in 0...4 {  // Только положительные сдвиги (выше или та же октава)
+        for octaveShift in -2...4 {  // От -2 до +4 октав
             let totalTranspose = baseTranspose + octaveShift * 12
+            
+            // Проверяем что все ноты playable и в диапазоне
+            var allPlayable = true
+            var allInRange = true
+            var playableCount = 0
             var inRangeCount = 0
-
+            var avgPitch = 0
+            
             for note in notes {
-                let transposedPitch = Int(note.pitch) + totalTranspose
-                if transposedPitch >= minPitch && transposedPitch <= maxPitch {
+                let transposedPitch = UInt8(max(0, min(127, Int(note.pitch) + totalTranspose)))
+                
+                // Проверяем что нота playable (имеет аппликатуру)
+                if WhistleConverter.pitchToFingering(transposedPitch, whistleKey: whistleKey) != nil {
+                    playableCount += 1
+                } else {
+                    allPlayable = false
+                }
+                
+                // Проверяем что нота в диапазоне
+                if transposedPitch >= pitchRange.min && transposedPitch <= pitchRange.max {
                     inRangeCount += 1
+                    avgPitch += Int(transposedPitch)
+                } else {
+                    allInRange = false
                 }
             }
-
-            // Также учитываем расстояние от центра диапазона
-            let avgPitch = notes.map { Int($0.pitch) + totalTranspose }.reduce(0, +) / max(1, notes.count)
-            let centerDistance = abs(avgPitch - optimalCenter)
-
-            // Сильный бонус за более высокие октавы (свистли - высокие инструменты)
-            let heightBonus = octaveShift * 200  // Увеличили бонус
-
-            let score = inRangeCount * 100 - centerDistance + heightBonus
+            
+            // Если не все ноты playable или не все в диапазоне - пропускаем этот вариант
+            if !allPlayable || !allInRange {
+                continue
+            }
+            
+            // Вычисляем средний pitch
+            avgPitch = avgPitch / max(1, inRangeCount)
+            
+            // Вычисляем расстояние от тоники вистла
+            let distanceFromTonic = abs(avgPitch - optimalTonicPitch)
+            
+            // Бонус за более высокие октавы (свистли - высокие инструменты)
+            let heightBonus = max(0, octaveShift) * 50
+            
+            // Оценка: чем ближе к тонике вистла, тем лучше
+            // Большой бонус за все ноты playable и в диапазоне
+            let score = 10000 - distanceFromTonic + heightBonus
 
             if score > bestScore {
                 bestScore = score
@@ -98,6 +146,9 @@ struct KeyCalculator {
             }
         }
 
+        // Если не нашли подходящий вариант, возвращаем базовое транспонирование
+        // (это не должно происходить, если тональность в списке playable keys)
         return bestTranspose
     }
 }
+

@@ -88,11 +88,16 @@ struct WhistleKeyPicker: View {
     
     var body: some View {
         HStack(spacing: 6) {
-            // Кнопка назад (к более высокому)
+            // Кнопка назад (к более высокому) - с зацикливанием
             Button(action: {
                 let keys = WhistleKey.allCases
-                if let index = keys.firstIndex(of: whistleKey), index > 0 {
-                    whistleKey = keys[index - 1]
+                if let index = keys.firstIndex(of: whistleKey) {
+                    if index > 0 {
+                        whistleKey = keys[index - 1]
+                    } else {
+                        // Переход к последнему элементу
+                        whistleKey = keys[keys.count - 1]
+                    }
                 }
             }) {
                 Image(systemName: "chevron.left")
@@ -111,11 +116,16 @@ struct WhistleKeyPicker: View {
             }
             .frame(minWidth: 50)
             
-            // Кнопка вперёд (к более низкому)
+            // Кнопка вперёд (к более низкому) - с зацикливанием
             Button(action: {
                 let keys = WhistleKey.allCases
-                if let index = keys.firstIndex(of: whistleKey), index < keys.count - 1 {
-                    whistleKey = keys[index + 1]
+                if let index = keys.firstIndex(of: whistleKey) {
+                    if index < keys.count - 1 {
+                        whistleKey = keys[index + 1]
+                    } else {
+                        // Переход к первому элементу
+                        whistleKey = keys[0]
+                    }
                 }
             }) {
                 Image(systemName: "chevron.right")

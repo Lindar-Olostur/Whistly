@@ -68,8 +68,13 @@ struct ContentView: View {
             updateWhistleKeyFromTune()
         }
         .onChange(of: whistleKey) { _, _ in
-            updatePlayableKeys()
-            optimizeOctaveForCurrentTune()
+            let updatedKeys = updatePlayableKeys()
+            // Автоматически выбираем первую тональность из списка playable keys
+            if let firstKey = updatedKeys.first {
+                selectKey(firstKey)
+            } else {
+                optimizeOctaveForCurrentTune()
+            }
         }
     }
     
@@ -304,13 +309,19 @@ struct ContentView: View {
         sequencer.transpose = optimalTranspose
     }
 
-    private func updatePlayableKeys() {
-        guard let originalInfo = sequencer.originalTuneInfo else { return }
-        playableKeys = WhistleConverter.findPlayableKeys(
+    @discardableResult
+    private func updatePlayableKeys() -> [String] {
+        guard let originalInfo = sequencer.originalTuneInfo else { 
+            playableKeys = []
+            return []
+        }
+        let keys = WhistleConverter.findPlayableKeys(
             for: originalInfo.allNotes,
             whistleKey: whistleKey,
             baseKey: currentTuneKey
         )
+        playableKeys = keys
+        return keys
     }
 }
 
