@@ -353,6 +353,13 @@ struct MeasureSelectorView: View {
                         endMeasure = min(8, totalMeasures)
                     }
                 }
+                
+                QuickSelectButton(title: "17-20") {
+                    if totalMeasures >= 17 {
+                        startMeasure = 17
+                        endMeasure = min(20, totalMeasures)
+                    }
+                }
             }
         }
         .padding()

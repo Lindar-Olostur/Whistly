@@ -32,8 +32,8 @@ struct TuneAndWhistleSectionView: View {
                                     Text(key)
                                         .font(.system(size: 12, weight: .medium))
                                         .foregroundColor(key == currentDisplayedKey ? .orange : .white.opacity(0.8))
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 13)
                                         .background(
                                             RoundedRectangle(cornerRadius: 6)
                                                 .fill(key == currentDisplayedKey ? Color.orange.opacity(0.2) : Color.white.opacity(0.1))

@@ -64,6 +64,30 @@ enum WhistleKey: String, CaseIterable {
         case .E:              return 4   // E
         }
     }
+
+    /// Диапазон свистля в MIDI нотах (minPitch, maxPitch)
+    /// Обычно тоника + 1 октава + несколько полутонов
+    var pitchRange: (min: UInt8, max: UInt8) {
+        switch self {
+        // Высокие свистли (тоника + ~1.75 октавы)
+        case .Eb:      return (51, 77)  // Eb3 - F5
+        case .D_high:  return (50, 71)  // D3 - B4
+        case .Csharp:  return (49, 70)  // C#3 - A#4
+        case .C:       return (48, 69)  // C3 - A4
+        case .B:       return (47, 68)  // B2 - G#4
+        case .Bb:      return (46, 67)  // A#2 - G4
+        case .A:       return (45, 66)  // A2 - F#4
+        case .Ab:      return (44, 65)  // G#2 - F4
+        case .G:       return (43, 64)  // G2 - E4
+        case .Fsharp:  return (42, 63)  // F#2 - D#4
+        case .F:       return (41, 62)  // F2 - D4
+        case .E:       return (40, 61)  // E2 - C#4
+
+        // Низкие свистли (тоника + ~1.75 октавы, но на октаву ниже)
+        case .Eb_low:  return (39, 65)  // Eb2 - F4
+        case .D_low:   return (38, 59)  // D2 - B3
+        }
+    }
 }
 
 // MARK: - Whistle Scale Degree
@@ -134,22 +158,33 @@ struct WhistleConverter {
     ///   - notes: оригинальные ноты мелодии
     ///   - whistleKey: строй вистла
     ///   - baseKey: базовая тональность мелодии (для расчета результирующих тональностей)
-    /// - Returns: массив уникальных тональностей мелодии, где все ноты playable на данном вистле
+    /// - Returns: массив уникальных тональностей мелодии, где все ноты playable на данном вистле и в его диапазоне
     static func findPlayableKeys(for notes: [MIDINote], whistleKey: WhistleKey, baseKey: String) -> [String] {
         var playableKeysSet = Set<String>()
+
+        // Получаем диапазон свистля
+        let pitchRange = whistleKey.pitchRange
+        let (minPitch, maxPitch) = (pitchRange.min, pitchRange.max)
 
         // Извлекаем базовую ноту из тональности
         let baseNoteIndex = noteNameToIndex(baseKey)
 
         // Проверяем каждое возможное транспонирование (-12 до +12 полутонов)
         for transpose in -12...12 {
-            // Проверяем, playable ли все ноты при этом транспонировании
-            let allPlayable = notes.allSatisfy { note in
-                let transposedPitch = max(0, min(127, Int(note.pitch) + transpose))
-                return pitchToFingering(UInt8(transposedPitch), whistleKey: whistleKey) != nil
+            // Проверяем, playable ли все ноты при этом транспонировании и находятся ли они в диапазоне
+            let allPlayableAndInRange = notes.allSatisfy { note in
+                let transposedPitch = UInt8(max(0, min(127, Int(note.pitch) + transpose)))
+
+                // Проверяем, что нота playable на свистле
+                guard let _ = pitchToFingering(transposedPitch, whistleKey: whistleKey) else {
+                    return false
+                }
+
+                // Проверяем, что нота находится в диапазоне свистля
+                return transposedPitch >= minPitch && transposedPitch <= maxPitch
             }
 
-            if allPlayable {
+            if allPlayableAndInRange {
                 // Рассчитываем результирующую тональность мелодии
                 let newNoteIndex = (baseNoteIndex + transpose + 12) % 12
                 let newKey = indexToNoteName(newNoteIndex, isMinor: baseKey.lowercased().hasSuffix("m"))
