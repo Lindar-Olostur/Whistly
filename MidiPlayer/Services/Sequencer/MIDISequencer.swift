@@ -524,7 +524,7 @@ class MIDISequencer {
     
     private func startPositionTimer() {
         stopPositionTimer()
-        positionTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+        positionTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
             self?.updatePosition()
         }
     }

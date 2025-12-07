@@ -290,6 +290,7 @@ struct MeasureSelectorView: View {
                             }
                         }) {
                             Image(systemName: "minus.circle.fill")
+                                .font(.system(size: 28))
                                 .foregroundColor(.purple.opacity(0.8))
                         }
                         
@@ -304,6 +305,7 @@ struct MeasureSelectorView: View {
                             }
                         }) {
                             Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 28))
                                 .foregroundColor(.purple.opacity(0.8))
                         }
                     }
@@ -325,6 +327,7 @@ struct MeasureSelectorView: View {
                             }
                         }) {
                             Image(systemName: "minus.circle.fill")
+                                .font(.system(size: 28))
                                 .foregroundColor(.cyan.opacity(0.8))
                         }
                         
@@ -339,37 +342,75 @@ struct MeasureSelectorView: View {
                             }
                         }) {
                             Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 28))
                                 .foregroundColor(.cyan.opacity(0.8))
                         }
                     }
                 }
             }
             
-            // Quick selection buttons
-            HStack(spacing: 10) {
-                QuickSelectButton(title: "All") {
-                    startMeasure = 1
-                    endMeasure = totalMeasures
-                }
-                
-                QuickSelectButton(title: "1-4") {
-                    startMeasure = 1
-                    endMeasure = min(4, totalMeasures)
-                }
-                
-                QuickSelectButton(title: "5-8") {
-                    if totalMeasures >= 5 {
-                        startMeasure = 5
-                        endMeasure = min(8, totalMeasures)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    QuickSelectButton(title: "All") {
+                        startMeasure = 1
+                        endMeasure = totalMeasures
+                    }
+                    
+                    QuickSelectButton(title: "1-4") {
+                        startMeasure = 1
+                        endMeasure = min(4, totalMeasures)
+                    }
+                    
+                    QuickSelectButton(title: "5-8") {
+                        if totalMeasures >= 5 {
+                            startMeasure = 5
+                            endMeasure = min(8, totalMeasures)
+                        }
+                    }
+                    
+                    QuickSelectButton(title: "9-12") {
+                        if totalMeasures >= 9 {
+                            startMeasure = 9
+                            endMeasure = min(12, totalMeasures)
+                        }
+                    }
+                    
+                    QuickSelectButton(title: "13-16") {
+                        if totalMeasures >= 13 {
+                            startMeasure = 13
+                            endMeasure = min(16, totalMeasures)
+                        }
+                    }
+                    
+                    QuickSelectButton(title: "17-20") {
+                        if totalMeasures >= 17 {
+                            startMeasure = 17
+                            endMeasure = min(20, totalMeasures)
+                        }
+                    }
+                    
+                    QuickSelectButton(title: "21-24") {
+                        if totalMeasures >= 21 {
+                            startMeasure = 21
+                            endMeasure = min(24, totalMeasures)
+                        }
+                    }
+                    
+                    QuickSelectButton(title: "25-28") {
+                        if totalMeasures >= 25 {
+                            startMeasure = 25
+                            endMeasure = min(28, totalMeasures)
+                        }
+                    }
+                    
+                    QuickSelectButton(title: "29-32") {
+                        if totalMeasures >= 29 {
+                            startMeasure = 29
+                            endMeasure = min(32, totalMeasures)
+                        }
                     }
                 }
-                
-                QuickSelectButton(title: "17-20") {
-                    if totalMeasures >= 17 {
-                        startMeasure = 17
-                        endMeasure = min(20, totalMeasures)
-                    }
-                }
+                .padding(.horizontal, 4)
             }
         }
         .padding()

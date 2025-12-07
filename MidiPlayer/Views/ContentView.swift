@@ -40,6 +40,7 @@ struct ContentView: View {
     @StateObject private var appSettings = AppSettings()
     @State private var showFileImport = false
     @State private var currentTuneId: UUID?
+    @State private var isLoading = false
     
     var body: some View {
         ZStack {
@@ -60,15 +61,35 @@ struct ContentView: View {
 //                landscape
 //            }
         }
+        .overlay {
+            if isLoading {
+                ZStack {
+                    Color.black.opacity(0.4)
+                        .ignoresSafeArea()
+                    
+                    VStack(spacing: 16) {
+                        ProgressView()
+                            .scaleEffect(1.5)
+                            .tint(.white)
+                        
+                        Text("Загрузка мелодии...")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                    }
+                    .padding(24)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color(red: 0.1, green: 0.1, blue: 0.15))
+                    )
+                }
+            }
+        }
         .onAppear {
-            // Загружаем последнюю мелодию или дефолтную
             if let lastTune = tuneManager.tunes.last {
                 loadTune(lastTune)
             } else {
                 loadSource(sourceType)
             }
-//            orientation.setupOrientationObserver()
-//            AppDelegate.orientationLock = .all
         }
         .onDisappear {
 //            orientation.removeOrientationObserver()
@@ -100,9 +121,15 @@ struct ContentView: View {
             saveCurrentSettings()
         }
         .sheet(isPresented: $showFileImport) {
-            FileImportView(tuneManager: tuneManager) { tune in
-                loadNewImportedTune(tune)
-            }
+            FileImportView(
+                tuneManager: tuneManager,
+                onTuneImported: { tune in
+                    loadNewImportedTune(tune)
+                },
+                onTuneSelected: { tune in
+                    loadTune(tune)
+                }
+            )
         }
     }
     
@@ -269,6 +296,7 @@ struct ContentView: View {
                 .frame(height: 220)
                 .overlay(
                     ProgressView()
+                        .scaleEffect(1.2)
                         .tint(.white)
                 )
                 .padding(.horizontal, 12)
@@ -311,63 +339,69 @@ struct ContentView: View {
     
     // MARK: - Methods
     
-    /// Загружает новую импортированную мелодию с автоматическим транспонированием в C4
     private func loadNewImportedTune(_ tune: TuneModel) {
+        isLoading = true
         sourceType = tune.fileType
         sequencer.stop()
         
-        let fileURL = tuneManager.fileURL(for: tune)
-        sequencer.loadABCFile(url: fileURL)
-        sequencer.selectedTuneIndex = tune.selectedTuneIndex
-        
-        // Устанавливаем строй вистла и применяем транспонирование в C4
-        whistleKey = WhistleKey.from(tuneKey: currentTuneKey)
-        updatePlayableKeys()
-        transposeToOctave4()
-        
-        // Сохраняем настройки с новым транспонированием
-        tuneManager.saveSettings(
-            for: tune.id,
-            transpose: sequencer.transpose,
-            tempo: sequencer.tempo,
-            whistleKey: whistleKey,
-            selectedKey: playableKeyVariants.first(where: { $0.transpose == sequencer.transpose })?.key,
-            startMeasure: sequencer.startMeasure,
-            endMeasure: sequencer.endMeasure,
-            selectedTuneIndex: sequencer.selectedTuneIndex
-        )
-        
-        // Теперь устанавливаем currentTuneId
-        currentTuneId = tune.id
+        DispatchQueue.global(qos: .userInitiated).async {
+            let fileURL = self.tuneManager.fileURL(for: tune)
+            self.sequencer.loadABCFile(url: fileURL)
+            self.sequencer.selectedTuneIndex = tune.selectedTuneIndex
+            
+            DispatchQueue.main.async {
+                self.whistleKey = WhistleKey.from(tuneKey: self.currentTuneKey)
+                self.updatePlayableKeys()
+                self.transposeToOctave4()
+                
+                self.tuneManager.saveSettings(
+                    for: tune.id,
+                    transpose: self.sequencer.transpose,
+                    tempo: self.sequencer.tempo,
+                    whistleKey: self.whistleKey,
+                    selectedKey: self.playableKeyVariants.first(where: { $0.transpose == self.sequencer.transpose })?.key,
+                    startMeasure: self.sequencer.startMeasure,
+                    endMeasure: self.sequencer.endMeasure,
+                    selectedTuneIndex: self.sequencer.selectedTuneIndex
+                )
+                
+                self.currentTuneId = tune.id
+                self.isLoading = false
+            }
+        }
     }
     
-    /// Загружает мелодию из TuneModel (для сохраненных мелодий)
     private func loadTune(_ tune: TuneModel) {
+        isLoading = true
         currentTuneId = tune.id
         sourceType = tune.fileType
         sequencer.stop()
         
-        // Восстанавливаем настройки
         sequencer.transpose = tune.transpose
         sequencer.tempo = tune.tempo
         whistleKey = tune.whistleKey
         sequencer.startMeasure = tune.startMeasure
         sequencer.endMeasure = tune.endMeasure
         
-        let fileURL = tuneManager.fileURL(for: tune)
-        if tune.fileType == .midi {
-            sequencer.loadMIDIFile(url: fileURL)
-        } else {
-            sequencer.loadABCFile(url: fileURL)
-            sequencer.selectedTuneIndex = tune.selectedTuneIndex
-        }
-        
-        updateWhistleKeyFromTune(applyAutoTranspose: false)
-        
-        // Восстанавливаем выбранную тональность если есть
-        if let selectedKey = tune.selectedKey {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                selectKey(selectedKey)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let fileURL = self.tuneManager.fileURL(for: tune)
+            if tune.fileType == .midi {
+                self.sequencer.loadMIDIFile(url: fileURL)
+            } else {
+                self.sequencer.loadABCFile(url: fileURL)
+                self.sequencer.selectedTuneIndex = tune.selectedTuneIndex
+            }
+            
+            DispatchQueue.main.async {
+                self.updateWhistleKeyFromTune(applyAutoTranspose: false)
+                
+                if let selectedKey = tune.selectedKey {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.selectKey(selectedKey)
+                    }
+                }
+                
+                self.isLoading = false
             }
         }
     }

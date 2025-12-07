@@ -14,7 +14,8 @@ struct FingeringImageView: View {
     
     private var isNoteActive: Bool {
         let noteEndBeat = note.startBeat + note.duration
-        return currentBeat >= note.startBeat && currentBeat < noteEndBeat
+        let lookAhead: Double = 0.05
+        return currentBeat + lookAhead >= note.startBeat && currentBeat < noteEndBeat
     }
     
     var body: some View {

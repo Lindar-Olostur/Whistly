@@ -57,6 +57,7 @@
 		5D39D7422EE1C161008EA769 /* ApplicatureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicatureView.swift; sourceTree = "<group>"; };
 		5D39D7452EE1C228008EA769 /* NoteHoleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteHoleView.swift; sourceTree = "<group>"; };
 		5D39D7472EE1C334008EA769 /* FingerChartStyleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerChartStyleManager.swift; sourceTree = "<group>"; };
+		5D3A240C2EE5FE7B00F72BC2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		5D6338F92EDB623000E5C6E5 /* ievanpolkka.abc */ = {isa = PBXFileReference; lastKnownFileType = text; path = ievanpolkka.abc; sourceTree = "<group>"; };
 		5D6338FA2EDB623000E5C6E5 /* silverspear.abc */ = {isa = PBXFileReference; lastKnownFileType = text; path = silverspear.abc; sourceTree = "<group>"; };
 		5D6338FB2EDB623000E5C6E5 /* silverspear.mid */ = {isa = PBXFileReference; lastKnownFileType = audio.midi; path = silverspear.mid; sourceTree = "<group>"; };
@@ -187,6 +188,7 @@
 		5D6339142EDB623000E5C6E5 /* MidiPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				5D3A240C2EE5FE7B00F72BC2 /* Info.plist */,
 				5D6338FC2EDB623000E5C6E5 /* Resources */,
 				5D6339012EDB623000E5C6E5 /* Services */,
 				5D6339102EDB623000E5C6E5 /* Views */,
@@ -480,6 +482,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MidiPlayer/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Whistly;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -520,6 +524,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MidiPlayer/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Whistly;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

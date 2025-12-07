@@ -29,7 +29,6 @@ class TuneManager: ObservableObject {
     
     // MARK: - File Management
     
-    /// Загружает файл с устройства
     func importFile(from url: URL) -> TuneModel? {
         let fileExtension = url.pathExtension.lowercased()
         guard fileExtension == "abc" else { return nil }
@@ -37,6 +36,12 @@ class TuneManager: ObservableObject {
         let id = UUID()
         let fileName = "tune_\(id.uuidString).\(fileExtension)"
         let destinationURL = tunesDirectory.appendingPathComponent(fileName)
+        
+        guard url.startAccessingSecurityScopedResource() else {
+            print("❌ Failed to access security scoped resource")
+            return nil
+        }
+        defer { url.stopAccessingSecurityScopedResource() }
         
         do {
             try FileManager.default.copyItem(at: url, to: destinationURL)

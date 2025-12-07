@@ -179,7 +179,8 @@ struct PianoRollView: View {
     }
     
     private func isNoteActive(_ note: MIDINote) -> Bool {
-        currentBeat >= note.startBeat && currentBeat < note.endBeat
+        let lookAhead: Double = 0//0.75
+        return currentBeat + lookAhead >= note.startBeat && currentBeat < note.endBeat
     }
     
     private func resetZoom() {

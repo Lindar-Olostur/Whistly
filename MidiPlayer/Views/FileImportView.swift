@@ -37,12 +37,10 @@ struct DocumentPicker: UIViewControllerRepresentable {
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             guard let url = urls.first else { return }
             
-            // Для iOS нужно получить доступ к файлу
             guard url.startAccessingSecurityScopedResource() else {
                 print("❌ Failed to access security scoped resource")
                 return
             }
-            defer { url.stopAccessingSecurityScopedResource() }
             
             onDocumentPicked(url)
         }
@@ -61,7 +59,9 @@ struct FileImportView: View {
     @State private var showPicker = false
     @State private var importError: String?
     @State private var showError = false
+    @State private var isLoading = false
     var onTuneImported: ((TuneModel) -> Void)?
+    var onTuneSelected: ((TuneModel) -> Void)?
     
     var body: some View {
         VStack(spacing: 20) {
@@ -77,6 +77,7 @@ struct FileImportView: View {
                 .padding(.horizontal)
             
             Button(action: {
+                
                 showPicker = true
             }) {
                 HStack {
@@ -111,7 +112,14 @@ struct FileImportView: View {
                     ScrollView {
                         VStack(spacing: 8) {
                             ForEach(tuneManager.tunes) { tune in
-                                TuneRowView(tune: tune, tuneManager: tuneManager)
+                                TuneRowView(
+                                    tune: tune,
+                                    tuneManager: tuneManager,
+                                    onTuneSelected: { selectedTune in
+                                        onTuneSelected?(selectedTune)
+                                        dismiss()
+                                    }
+                                )
                             }
                         }
                         .padding(.horizontal)
@@ -133,18 +141,48 @@ struct FileImportView: View {
             )
             .ignoresSafeArea()
         )
+        .overlay {
+            if isLoading {
+                ZStack {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                    
+                    VStack(spacing: 16) {
+                        ProgressView()
+                            .scaleEffect(1.5)
+                            .tint(.white)
+                        
+                        Text("Загрузка файла...")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                    }
+                    .padding(24)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color(red: 0.1, green: 0.1, blue: 0.15))
+                    )
+                }
+            }
+        }
         .sheet(isPresented: $showPicker) {
             DocumentPicker(
                 allowedContentTypes: [
                     UTType(filenameExtension: "abc") ?? .data
                 ],
                 onDocumentPicked: { url in
-                    if let tune = tuneManager.importFile(from: url) {
-                        onTuneImported?(tune)
-                        dismiss()
-                    } else {
-                        importError = "Не удалось загрузить файл"
-                        showError = true
+                    isLoading = true
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        let tune = tuneManager.importFile(from: url)
+                        DispatchQueue.main.async {
+                            isLoading = false
+                            if let tune = tune {
+                                onTuneImported?(tune)
+                                dismiss()
+                            } else {
+                                importError = "Не удалось загрузить файл"
+                                showError = true
+                            }
+                        }
                     }
                 }
             )
@@ -162,6 +200,7 @@ struct FileImportView: View {
 struct TuneRowView: View {
     let tune: TuneModel
     @ObservedObject var tuneManager: TuneManager
+    var onTuneSelected: ((TuneModel) -> Void)?
     @State private var showDeleteConfirmation = false
     
     var body: some View {
@@ -197,6 +236,10 @@ struct TuneRowView: View {
         .padding()
         .background(Color.white.opacity(0.1))
         .cornerRadius(12)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onTuneSelected?(tune)
+        }
         .confirmationDialog(
             "Удалить мелодию?",
             isPresented: $showDeleteConfirmation,
@@ -211,6 +254,6 @@ struct TuneRowView: View {
 }
 
 #Preview {
-    FileImportView(tuneManager: TuneManager(), onTuneImported: nil)
+    FileImportView(tuneManager: TuneManager(), onTuneImported: nil, onTuneSelected: nil)
 }
 
