@@ -19,14 +19,7 @@ struct HeaderSectionView: View {
                 Text("Whistly")
                     .font(.system(size: 24, weight: .heavy, design: .rounded))
                     .foregroundStyle(
-                        LinearGradient(
-                            colors: [
-                                Color(red: 0.7, green: 0.5, blue: 1.0),
-                                Color(red: 0.4, green: 0.8, blue: 0.9)
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
+                        LinearGradient.orangeBlueHorizontal()
                     )
 
                 if let tune = tuneName {
@@ -41,7 +34,7 @@ struct HeaderSectionView: View {
             // Кнопка импорта
             if let onImportTap = onImportTap {
                 Button(action: onImportTap) {
-                    Image(systemName: "doc.badge.plus")
+                    Image(systemName: "line.3.horizontal")
                         .font(.system(size: 18))
                         .foregroundColor(.white)
                         .padding(8)
@@ -49,18 +42,6 @@ struct HeaderSectionView: View {
                         .clipShape(Circle())
                 }
                 .padding(.trailing, 8)
-            }
-
-            // Переключатель MIDI/ABC
-            Picker("Source", selection: $sourceType) {
-                ForEach(SourceType.allCases, id: \.self) { type in
-                    Text(type.rawValue).tag(type)
-                }
-            }
-            .pickerStyle(.segmented)
-            .frame(width: 120)
-            .onChange(of: sourceType) { _, newValue in
-                onSourceChange(newValue)
             }
         }
         .padding(.horizontal, 20)

@@ -19,7 +19,7 @@ struct TuneAndWhistleSectionView: View {
         VStack(spacing: 8) {
             HStack(spacing: 12) {
                 // Выбор строя вистла
-                WhistleKeyPicker(whistleKey: $whistleKey)
+                WhistleKeyPicker(isMenu: true, whistleKey: $whistleKey)
 
                 // Доступные тональности мелодии для выбранного вистла
                 if !playableKeys.isEmpty {
@@ -44,6 +44,17 @@ struct TuneAndWhistleSectionView: View {
                         .padding(.horizontal, 4)
                     }
                     .frame(height: 30)
+                } else {
+                    Text("Нет доступных тональностей")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.white.opacity(0.5))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 13)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(Color.white.opacity(0.05))
+                        )
+                        .frame(height: 30)
                 }
 
                 Spacer()

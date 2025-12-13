@@ -34,14 +34,7 @@ struct PlaybackControlsSectionView: View {
                 ZStack {
                     Circle()
                         .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color(red: 0.6, green: 0.4, blue: 0.9),
-                                    Color(red: 0.4, green: 0.6, blue: 0.9)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
+                            LinearGradient.purpleDiagonal()
                         )
                         .frame(width: 64, height: 64)
                         .shadow(color: Color.purple.opacity(0.4), radius: 10, x: 0, y: 5)
@@ -90,6 +83,13 @@ struct PlaybackControlsSectionView: View {
         onNextMeasure: {}
     )
 }
+
+
+
+
+
+
+
 
 
 

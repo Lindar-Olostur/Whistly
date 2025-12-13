@@ -16,10 +16,10 @@ class MIDISequencer {
     let engine = AudioEngine()
     let instrument = MIDISampler()
     
-    // AudioToolbox для секвенсера (более надёжно)
     private var musicPlayer: MusicPlayer?
     private var musicSequence: MusicSequence?
     private var auGraph: AUGraph?
+    private var samplerUnit: AudioUnit?
     
     // Состояние
     var isPlaying: Bool = false
@@ -415,7 +415,13 @@ class MIDISequencer {
             print("Failed to start AUGraph: \(status)")
         }
         
-        // Привязываем к секвенсу
+        var sampler: AudioUnit?
+        status = AUGraphNodeInfo(audioGraph, samplerNode, nil, &sampler)
+        if status != noErr {
+            print("Failed to get sampler unit: \(status)")
+        }
+        self.samplerUnit = sampler
+        
         status = MusicSequenceSetAUGraph(sequence, audioGraph)
         if status != noErr {
             print("Failed to set AUGraph to sequence: \(status)")
@@ -541,14 +547,29 @@ class MIDISequencer {
         MusicPlayerGetTime(player, &time)
         currentBeat = time
         
-        // Проверяем конец диапазона
         if currentBeat >= endBeat {
             if isLooping {
-                MusicPlayerSetTime(player, startBeat)
+                MusicPlayerStop(player)
+                sendAllNotesOff()
                 currentBeat = startBeat
+                MusicPlayerSetTime(player, startBeat)
+                MusicPlayerPreroll(player)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) { [weak self] in
+                    guard let self = self, self.isPlaying == false else { return }
+                    self.isPlaying = true
+                    MusicPlayerStart(player)
+                }
+                isPlaying = false
             } else {
                 stop()
             }
+        }
+    }
+    
+    private func sendAllNotesOff() {
+        guard let sampler = samplerUnit else { return }
+        for channel: UInt32 in 0..<16 {
+            MusicDeviceMIDIEvent(sampler, 0xB0 | channel, 123, 0, 0)
         }
     }
     

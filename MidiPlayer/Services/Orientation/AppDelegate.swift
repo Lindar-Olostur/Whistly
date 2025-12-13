@@ -5,7 +5,7 @@
 //  Created by Lindar Olostur on 30.11.2025.
 //
 
-
+#if os(iOS)
 import UIKit
 
 class AppDelegate: NSObject, UIApplicationDelegate {
@@ -16,3 +16,15 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         return AppDelegate.orientationLock
     }
 }
+#elseif os(macOS)
+import AppKit
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+    }
+    
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return true
+    }
+}
+#endif

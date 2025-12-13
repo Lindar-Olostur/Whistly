@@ -59,6 +59,16 @@ class TuneManager: ObservableObject {
                 tune.title = firstTune.title
                 tune.detectedKey = firstTune.key
                 tune.selectedTuneIndex = 0
+                
+                let midiInfo = ABCParser.toMIDIFileInfo(firstTune, transpose: 0)
+                    let loops = MeasureLoop.generateDefaultLoops(
+                        totalMeasures: midiInfo.totalMeasures,
+                        beatsPerMeasure: midiInfo.beatsPerMeasure
+                    )
+                    tune.measureLoops = loops
+                    tune.selectedLoopId = loops.first?.id
+                    tune.endMeasure = midiInfo.totalMeasures
+                
             }
             
             tunes.append(tune)
@@ -98,8 +108,7 @@ class TuneManager: ObservableObject {
     
     // MARK: - Settings Management
     
-    /// Сохраняет настройки для текущей мелодии
-    func saveSettings(for tuneId: UUID, transpose: Int? = nil, tempo: Double? = nil, whistleKey: WhistleKey? = nil, selectedKey: String? = nil, startMeasure: Int? = nil, endMeasure: Int? = nil, selectedTuneIndex: Int? = nil) {
+    func saveSettings(for tuneId: UUID, transpose: Int? = nil, tempo: Double? = nil, whistleKey: WhistleKey? = nil, selectedKey: String? = nil, startMeasure: Int? = nil, endMeasure: Int? = nil, selectedTuneIndex: Int? = nil, selectedLoopId: UUID? = nil) {
         guard let index = tunes.firstIndex(where: { $0.id == tuneId }) else { return }
         
         if let transpose = transpose {
@@ -123,7 +132,53 @@ class TuneManager: ObservableObject {
         if let selectedTuneIndex = selectedTuneIndex {
             tunes[index].selectedTuneIndex = selectedTuneIndex
         }
+        if let selectedLoopId = selectedLoopId {
+            tunes[index].selectedLoopId = selectedLoopId
+        }
         
+        saveTunes()
+    }
+    
+    // MARK: - Loop Management
+    
+    func addLoop(for tuneId: UUID, startMeasure: Int, endMeasure: Int) {
+        guard let index = tunes.firstIndex(where: { $0.id == tuneId }) else { return }
+        let loop = MeasureLoop(startMeasure: startMeasure, endMeasure: endMeasure, isDefault: false)
+        tunes[index].measureLoops.append(loop)
+        tunes[index].selectedLoopId = loop.id
+        saveTunes()
+    }
+    
+    func removeLoop(for tuneId: UUID, loopId: UUID) {
+        guard let index = tunes.firstIndex(where: { $0.id == tuneId }) else { return }
+        tunes[index].measureLoops.removeAll { $0.id == loopId }
+        if tunes[index].selectedLoopId == loopId {
+            tunes[index].selectedLoopId = tunes[index].measureLoops.first?.id
+        }
+        saveTunes()
+    }
+    
+    func selectLoop(for tuneId: UUID, loopId: UUID) {
+        guard let index = tunes.firstIndex(where: { $0.id == tuneId }) else { return }
+        tunes[index].selectedLoopId = loopId
+        if let loop = tunes[index].measureLoops.first(where: { $0.id == loopId }) {
+            tunes[index].startMeasure = loop.startMeasure
+            tunes[index].endMeasure = loop.endMeasure
+        }
+        saveTunes()
+    }
+    
+    func getLoops(for tuneId: UUID) -> [MeasureLoop] {
+        tunes.first { $0.id == tuneId }?.measureLoops ?? []
+    }
+    
+    func initializeLoopsIfNeeded(for tuneId: UUID, totalMeasures: Int, beatsPerMeasure: Int) {
+        guard let index = tunes.firstIndex(where: { $0.id == tuneId }) else { return }
+        guard tunes[index].measureLoops.isEmpty else { return }
+        
+        let loops = MeasureLoop.generateDefaultLoops(totalMeasures: totalMeasures, beatsPerMeasure: beatsPerMeasure)
+        tunes[index].measureLoops = loops
+        tunes[index].selectedLoopId = loops.first?.id
         saveTunes()
     }
     

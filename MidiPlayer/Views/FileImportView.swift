@@ -8,7 +8,8 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-// MARK: - Document Picker
+#if os(iOS)
+import UIKit
 
 struct DocumentPicker: UIViewControllerRepresentable {
     let allowedContentTypes: [UTType]
@@ -46,10 +47,10 @@ struct DocumentPicker: UIViewControllerRepresentable {
         }
         
         func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-            // Пользователь отменил выбор
         }
     }
 }
+#endif
 
 // MARK: - File Import View
 
@@ -65,6 +66,12 @@ struct FileImportView: View {
     
     var body: some View {
         VStack(spacing: 20) {
+            Button {
+                dismiss()
+            } label: {
+                Text("Close")
+            }
+
             Text("Импорт файлов")
                 .font(.title2)
                 .fontWeight(.bold)
@@ -89,14 +96,7 @@ struct FileImportView: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 0.2, green: 0.4, blue: 0.8),
-                            Color(red: 0.3, green: 0.5, blue: 0.9)
-                        ],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
+                    LinearGradient.lightBlueHorizontal()
                 )
                 .cornerRadius(12)
             }
@@ -131,14 +131,7 @@ struct FileImportView: View {
         }
         .padding()
         .background(
-            LinearGradient(
-                colors: [
-                    Color(red: 0.06, green: 0.06, blue: 0.1),
-                    Color(red: 0.1, green: 0.08, blue: 0.14)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+            LinearGradient.goldVertical()
             .ignoresSafeArea()
         )
         .overlay {
@@ -164,6 +157,7 @@ struct FileImportView: View {
                 }
             }
         }
+        #if os(iOS)
         .sheet(isPresented: $showPicker) {
             DocumentPicker(
                 allowedContentTypes: [
@@ -187,6 +181,37 @@ struct FileImportView: View {
                 }
             )
         }
+        #elseif os(macOS)
+        .fileImporter(
+            isPresented: $showPicker,
+            allowedContentTypes: [
+                UTType(filenameExtension: "abc") ?? .data
+            ],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                guard let url = urls.first else { return }
+                isLoading = true
+                DispatchQueue.global(qos: .userInitiated).async {
+                    let tune = tuneManager.importFile(from: url)
+                    DispatchQueue.main.async {
+                        isLoading = false
+                        if let tune = tune {
+                            onTuneImported?(tune)
+                            dismiss()
+                        } else {
+                            importError = "Не удалось загрузить файл"
+                            showError = true
+                        }
+                    }
+                }
+            case .failure:
+                importError = "Не удалось открыть файл"
+                showError = true
+            }
+        }
+        #endif
         .alert("Ошибка", isPresented: $showError) {
             Button("OK", role: .cancel) { }
         } message: {

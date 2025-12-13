@@ -41,96 +41,75 @@ struct ContentView: View {
     @State private var showFileImport = false
     @State private var currentTuneId: UUID?
     @State private var isLoading = false
+    @State private var measureLoops: [MeasureLoop] = []
+    @State private var selectedLoopId: UUID?
     
     var body: some View {
-        ZStack {
-            // Фон
-            LinearGradient(
-                colors: [
-                    Color(red: 0.06, green: 0.06, blue: 0.1),
-                    Color(red: 0.1, green: 0.08, blue: 0.14),
-                    Color(red: 0.06, green: 0.06, blue: 0.1)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-//            if orientation.currentOrientation == .portrait {
-                portrait
-//            } else {
-//                landscape
-//            }
-        }
-        .overlay {
-            if isLoading {
-                ZStack {
+        // Фон
+        
+        //            if orientation.currentOrientation == .portrait {
+        portrait
+        //            } else {
+        //                landscape
+        //            }
+            .background(.bgPrimary)
+            .overlay {
+                if isLoading {
                     Color.black.opacity(0.4)
                         .ignoresSafeArea()
                     
-                    VStack(spacing: 16) {
-                        ProgressView()
-                            .scaleEffect(1.5)
-                            .tint(.white)
-                        
-                        Text("Загрузка мелодии...")
-                            .font(.headline)
-                            .foregroundColor(.white)
+                    ProgressView()
+                        .scaleEffect(1.5)
+                        .tint(.white)
+                }
+            }
+            .onAppear {
+                if let lastTune = tuneManager.tunes.last {
+                    loadTune(lastTune)
+                } else {
+                    loadSource(sourceType)
+                }
+            }
+            .onDisappear {
+                //            orientation.removeOrientationObserver()
+                //            AppDelegate.orientationLock = .portrait
+            }
+            .onChange(of: sequencer.selectedTuneIndex) { _, _ in
+                updateWhistleKeyFromTune()
+            }
+            .onChange(of: whistleKey) { _, _ in
+                let updatedKeys = updatePlayableKeys()
+                // Автоматически выбираем первую тональность из списка playable keys
+                if let firstKey = updatedKeys.first {
+                    selectKey(firstKey)
+                } else {
+                    optimizeOctaveForCurrentTune()
+                }
+                saveCurrentSettings()
+            }
+            .onChange(of: sequencer.transpose) { _, _ in
+                saveCurrentSettings()
+            }
+            .onChange(of: sequencer.tempo) { _, _ in
+                saveCurrentSettings()
+            }
+            .onChange(of: sequencer.startMeasure) { _, _ in
+                saveCurrentSettings()
+            }
+            .onChange(of: sequencer.endMeasure) { _, _ in
+                saveCurrentSettings()
+            }
+            .sheet(isPresented: $showFileImport) {
+                FileImportView(
+                    tuneManager: tuneManager,
+                    onTuneImported: { tune in
+                        loadNewImportedTune(tune)
+                    },
+                    onTuneSelected: { tune in
+                        loadTune(tune)
                     }
-                    .padding(24)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color(red: 0.1, green: 0.1, blue: 0.15))
-                    )
-                }
+                )
             }
-        }
-        .onAppear {
-            if let lastTune = tuneManager.tunes.last {
-                loadTune(lastTune)
-            } else {
-                loadSource(sourceType)
-            }
-        }
-        .onDisappear {
-//            orientation.removeOrientationObserver()
-//            AppDelegate.orientationLock = .portrait
-        }
-        .onChange(of: sequencer.selectedTuneIndex) { _, _ in
-            updateWhistleKeyFromTune()
-        }
-        .onChange(of: whistleKey) { _, _ in
-            let updatedKeys = updatePlayableKeys()
-            // Автоматически выбираем первую тональность из списка playable keys
-            if let firstKey = updatedKeys.first {
-                selectKey(firstKey)
-            } else {
-                optimizeOctaveForCurrentTune()
-            }
-            saveCurrentSettings()
-        }
-        .onChange(of: sequencer.transpose) { _, _ in
-            saveCurrentSettings()
-        }
-        .onChange(of: sequencer.tempo) { _, _ in
-            saveCurrentSettings()
-        }
-        .onChange(of: sequencer.startMeasure) { _, _ in
-            saveCurrentSettings()
-        }
-        .onChange(of: sequencer.endMeasure) { _, _ in
-            saveCurrentSettings()
-        }
-        .sheet(isPresented: $showFileImport) {
-            FileImportView(
-                tuneManager: tuneManager,
-                onTuneImported: { tune in
-                    loadNewImportedTune(tune)
-                },
-                onTuneSelected: { tune in
-                    loadTune(tune)
-                }
-            )
-        }
     }
     
     @ViewBuilder
@@ -153,8 +132,8 @@ struct ContentView: View {
     
     @ViewBuilder
     private var portrait: some View {
-            VStack(spacing: 14) {
-                // Заголовок и переключатель источника
+        VStack(spacing: 14) {
+            // Заголовок и переключатель источника
             HeaderSectionView(
                 tuneName: currentTuneName,
                 sourceType: $sourceType,
@@ -163,8 +142,8 @@ struct ContentView: View {
                     showFileImport = true
                 }
             )
-                
-                // Выбор мелодии для ABC и строй вистла
+            
+            // Выбор мелодии для ABC и строй вистла
             TuneAndWhistleSectionView(
                 whistleKey: $whistleKey,
                 playableKeys: playableKeys,
@@ -173,39 +152,50 @@ struct ContentView: View {
                 currentDisplayedKey: currentDisplayedKey,
                 onKeySelect: selectKey
             )
-                
-                // Переключатель режима отображения
-                ViewModePicker(viewMode: $viewMode)
-                    .padding(.horizontal, 20)
-                
-                // Piano Roll или Аппликатуры
-                visualizationSection
-                
-                // Выбор диапазона тактов
-                MeasureSelectorView(
-                    startMeasure: $sequencer.startMeasure,
-                    endMeasure: $sequencer.endMeasure,
-                    totalMeasures: sequencer.totalMeasures
-                )
+            
+            // Переключатель режима отображения
+            ViewModePicker(viewMode: $viewMode)
                 .padding(.horizontal, 20)
-                
-                // Информация о позиции
+            
+            // Piano Roll или Аппликатуры
+            visualizationSection
+            
+            // Выбор диапазона тактов
+            MeasureSelectorView(
+                startMeasure: $sequencer.startMeasure,
+                endMeasure: $sequencer.endMeasure,
+                totalMeasures: sequencer.totalMeasures,
+                loops: measureLoops,
+                selectedLoopId: selectedLoopId,
+                onLoopSelect: { loop in
+                    selectLoop(loop)
+                },
+                onLoopAdd: currentTuneId != nil ? { start, end in
+                    addLoop(start: start, end: end)
+                } : nil,
+                onLoopRemove: { loopId in
+                    removeLoop(loopId: loopId)
+                }
+            )
+            .padding(.horizontal, 20)
+            
+            // Информация о позиции
             PositionInfoSectionView(
                 currentBeat: sequencer.currentBeat,
                 currentMeasure: currentMeasure,
                 totalMeasures: sequencer.totalMeasures,
                 tempo: sequencer.tempo
             )
-                
-                // Слайдер темпа
+            
+            // Слайдер темпа
             TempoAndTransposeSectionView(
                 tempo: $sequencer.tempo
             )
-                
-                Spacer()
-                
-                // Кнопки управления
-                playbackControlsSection
+            
+            Spacer()
+            
+            // Кнопки управления
+            playbackControlsSection
         }
     }
     
@@ -257,7 +247,7 @@ struct ContentView: View {
         }
         saveCurrentSettings()
     }
-
+    
     /// Текущая отображаемая тональность (с учётом транспонирования)
     private var currentDisplayedKey: String {
         KeyCalculator.currentDisplayedKey(baseKey: currentTuneKey, transpose: sequencer.transpose)
@@ -351,18 +341,32 @@ struct ContentView: View {
             
             DispatchQueue.main.async {
                 self.whistleKey = WhistleKey.from(tuneKey: self.currentTuneKey)
-                self.updatePlayableKeys()
-                self.transposeToOctave4()
+                let keys = self.updatePlayableKeys()
+                
+                if let firstKey = keys.first {
+                    self.selectKey(firstKey)
+                } else {
+                    self.transposeToOctave4()
+                }
+                
+                self.measureLoops = tune.measureLoops
+                self.selectedLoopId = tune.selectedLoopId ?? tune.measureLoops.first?.id
+                
+                if let selectedLoop = self.measureLoops.first(where: { $0.id == self.selectedLoopId }) {
+                    self.sequencer.startMeasure = selectedLoop.startMeasure
+                    self.sequencer.endMeasure = min(selectedLoop.endMeasure, self.sequencer.totalMeasures)
+                }
                 
                 self.tuneManager.saveSettings(
                     for: tune.id,
                     transpose: self.sequencer.transpose,
                     tempo: self.sequencer.tempo,
                     whistleKey: self.whistleKey,
-                    selectedKey: self.playableKeyVariants.first(where: { $0.transpose == self.sequencer.transpose })?.key,
+                    selectedKey: keys.first,
                     startMeasure: self.sequencer.startMeasure,
                     endMeasure: self.sequencer.endMeasure,
-                    selectedTuneIndex: self.sequencer.selectedTuneIndex
+                    selectedTuneIndex: self.sequencer.selectedTuneIndex,
+                    selectedLoopId: self.selectedLoopId
                 )
                 
                 self.currentTuneId = tune.id
@@ -377,9 +381,13 @@ struct ContentView: View {
         sourceType = tune.fileType
         sequencer.stop()
         
-        sequencer.transpose = tune.transpose
+        let savedWhistleKey = tune.whistleKey
+        let savedTranspose = tune.transpose
+        let savedSelectedKey = tune.selectedKey
+        let savedLoops = tune.measureLoops
+        let savedSelectedLoopId = tune.selectedLoopId
+        
         sequencer.tempo = tune.tempo
-        whistleKey = tune.whistleKey
         sequencer.startMeasure = tune.startMeasure
         sequencer.endMeasure = tune.endMeasure
         
@@ -393,12 +401,32 @@ struct ContentView: View {
             }
             
             DispatchQueue.main.async {
-                self.updateWhistleKeyFromTune(applyAutoTranspose: false)
+                self.whistleKey = savedWhistleKey
+                self.updatePlayableKeys()
                 
-                if let selectedKey = tune.selectedKey {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.selectKey(selectedKey)
-                    }
+                if let selectedKey = savedSelectedKey {
+                    self.selectKey(selectedKey)
+                } else {
+                    self.sequencer.transpose = savedTranspose
+                }
+                
+                self.measureLoops = savedLoops
+                self.selectedLoopId = savedSelectedLoopId
+                
+                if savedLoops.isEmpty {
+                    self.tuneManager.initializeLoopsIfNeeded(
+                        for: tune.id,
+                        totalMeasures: self.sequencer.totalMeasures,
+                        beatsPerMeasure: self.sequencer.beatsPerMeasure
+                    )
+                    self.measureLoops = self.tuneManager.getLoops(for: tune.id)
+                    self.selectedLoopId = self.measureLoops.first?.id
+                }
+                
+                if let selectedLoopId = self.selectedLoopId,
+                   let selectedLoop = self.measureLoops.first(where: { $0.id == selectedLoopId }) {
+                    self.sequencer.startMeasure = selectedLoop.startMeasure
+                    self.sequencer.endMeasure = min(selectedLoop.endMeasure, self.sequencer.totalMeasures)
                 }
                 
                 self.isLoading = false
@@ -418,16 +446,49 @@ struct ContentView: View {
             selectedKey: playableKeyVariants.first(where: { $0.transpose == sequencer.transpose })?.key,
             startMeasure: sequencer.startMeasure,
             endMeasure: sequencer.endMeasure,
-            selectedTuneIndex: sequencer.selectedTuneIndex
+            selectedTuneIndex: sequencer.selectedTuneIndex,
+            selectedLoopId: selectedLoopId
         )
     }
     
+    private func selectLoop(_ loop: MeasureLoop) {
+        selectedLoopId = loop.id
+        sequencer.startMeasure = loop.startMeasure
+        sequencer.endMeasure = min(loop.endMeasure, sequencer.totalMeasures)
+        
+        if let tuneId = currentTuneId {
+            tuneManager.selectLoop(for: tuneId, loopId: loop.id)
+        }
+    }
+    
+    private func addLoop(start: Int, end: Int) {
+        guard let tuneId = currentTuneId else { return }
+        tuneManager.addLoop(for: tuneId, startMeasure: start, endMeasure: end)
+        measureLoops = tuneManager.getLoops(for: tuneId)
+        if let newLoop = measureLoops.last {
+            selectedLoopId = newLoop.id
+        }
+    }
+    
+    private func removeLoop(loopId: UUID) {
+        guard let tuneId = currentTuneId else { return }
+        tuneManager.removeLoop(for: tuneId, loopId: loopId)
+        measureLoops = tuneManager.getLoops(for: tuneId)
+        if selectedLoopId == loopId {
+            selectedLoopId = measureLoops.first?.id
+            if let loop = measureLoops.first {
+                sequencer.startMeasure = loop.startMeasure
+                sequencer.endMeasure = min(loop.endMeasure, sequencer.totalMeasures)
+            }
+        }
+    }
+    
     private func loadSource(_ source: SourceType) {
-        // sourceType уже установлен через binding в HeaderSectionView
         sequencer.stop()
         currentTuneId = nil
+        measureLoops = []
+        selectedLoopId = nil
         
-        // Сбрасываем транспонирование при переключении источника
         sequencer.transpose = 0
         
         switch source {
@@ -436,7 +497,6 @@ struct ContentView: View {
         case .midi:
             break
         }
-        // Устанавливаем строй вистла по тональности мелодии
         updateWhistleKeyFromTune()
     }
     
@@ -466,11 +526,11 @@ struct ContentView: View {
         sequencer.transpose = transpose
         print("🎵 Автоматически транспонировано в тонику на 4 октаву: \(transpose > 0 ? "+" : "")\(transpose) полутонов")
     }
-
+    
     /// Оптимизирует октаву для текущей мелодии и выбранного свистля
     private func optimizeOctaveForCurrentTune() {
         guard let originalInfo = sequencer.originalTuneInfo else { return }
-
+        
         // Оптимизируем октаву для текущей тональности (без смены тональности)
         let optimalTranspose = KeyCalculator.optimalTranspose(
             from: currentTuneKey,
@@ -478,11 +538,11 @@ struct ContentView: View {
             notes: originalInfo.allNotes,
             whistleKey: whistleKey
         )
-
+        
         // Устанавливаем оптимальную октаву
         sequencer.transpose = optimalTranspose
     }
-
+    
     @discardableResult
     private func updatePlayableKeys() -> [String] {
         guard let originalInfo = sequencer.originalTuneInfo else {
