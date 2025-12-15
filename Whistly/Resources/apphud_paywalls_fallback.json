@@ -1,0 +1,56 @@
+{
+  "data": {
+    "results": [
+      {
+        "id": "9880bb2e",
+        "json": null,
+        "screen": null,
+        "name": "paywall",
+        "identifier": "paywall",
+        "default": false,
+        "experiment_id": null,
+        "experiment_name": null,
+        "from_paywall": null,
+        "variation_identifier": null,
+        "variation_name": null,
+        "items_v2": [
+          {
+            "id": "b95cb50f",
+            "item_id": "d9331214-afd3-462f-a827-f81f7dd15dac",
+            "name": "week 4.99",
+            "product_id": "calorie_week",
+            "store": "app_store"
+          },
+          {
+            "id": "17440aed",
+            "item_id": "cda96255-27e1-4b38-b17d-4be4097052ff",
+            "name": "week 4.99 trial",
+            "product_id": "calorie_week_trial",
+            "store": "app_store"
+          }
+        ],
+        "items": [
+          {
+            "id": "b95cb50f",
+            "item_id": "d9331214-afd3-462f-a827-f81f7dd15dac",
+            "name": "week 4.99",
+            "product_id": "calorie_week",
+            "store": "app_store",
+            "properties": {}
+          },
+          {
+            "id": "17440aed",
+            "item_id": "cda96255-27e1-4b38-b17d-4be4097052ff",
+            "name": "week 4.99 trial",
+            "product_id": "calorie_week_trial",
+            "store": "app_store",
+            "properties": {}
+          }
+        ]
+      }
+    ],
+    "meta": null
+  },
+  "errors": null
+}
+
