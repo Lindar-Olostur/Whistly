@@ -1,18 +1,27 @@
 import SwiftUI
+import Observation
 
-final class NavigationManager: ObservableObject {
+@Observable
+final class NavigationManager {
     @MainActor let premium = PurchaseManager.shared
-    @Published var screen: Screen = .splash
-    @AppStorage("onboardingKey") var onCompleted = false
-    @Published var openMainPaywall: Bool = false
-    @Published var openSettings: Bool = false
+    var screen: Screen = .splash
+    var onCompleted: Bool {
+            get {
+                UserDefaults.standard.bool(forKey: "onboardingKey")
+            }
+            set {
+                UserDefaults.standard.set(newValue, forKey: "onboardingKey")
+            }
+        }
+    var openMainPaywall: Bool = false
+    var openSettings: Bool = false
    
     @MainActor func splashFinished() {
         if onCompleted {
             if premium.isSubscribed {
                 withAnimation { screen = .main }
             } else {
-                withAnimation { screen = .onboardingPaywall }
+                withAnimation { screen = .paywall }
             }
         } else {
             withAnimation { screen = .onboarding }
@@ -24,7 +33,7 @@ final class NavigationManager: ObservableObject {
         if premium.isSubscribed {
             withAnimation { screen = .main }
         } else {
-            withAnimation { screen = .onboardingPaywall }
+            withAnimation { screen = .paywall }
         }
     }
     
@@ -34,7 +43,7 @@ final class NavigationManager: ObservableObject {
 }
 
 enum Screen: Equatable {
-    case splash, onboarding, onboardingPaywall, main
+    case splash, onboarding, paywall, main
 }
 
 

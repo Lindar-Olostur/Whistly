@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D74FB652EF154BA002DD315 /* MainContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB642EF154B9002DD315 /* MainContainer.swift */; };
 		5D8754822EEED73F00972A1D /* WhistlyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8754802EEED73F00972A1D /* WhistlyApp.swift */; };
 		5D8754832EEED73F00972A1D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5D87547F2EEED73F00972A1D /* Assets.xcassets */; };
 		5D8754852EEEDCBF00972A1D /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8754842EEEDCBF00972A1D /* NavigationManager.swift */; };
@@ -36,10 +37,16 @@
 		5DDF63DE2EF03E6700B8AB9C /* PurchasesToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDF63D92EF03E6700B8AB9C /* PurchasesToggle.swift */; };
 		5DDF63E02EF03F0200B8AB9C /* PWFeatureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDF63DF2EF03F0200B8AB9C /* PWFeatureView.swift */; };
 		5DDF63E22EF0430E00B8AB9C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDF63E12EF0430E00B8AB9C /* ContentView.swift */; };
+		5DDF63E72EF0669400B8AB9C /* RegistrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDF63E62EF0669400B8AB9C /* RegistrationManager.swift */; };
+		5DDF63E92EF066D700B8AB9C /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDF63E82EF066D700B8AB9C /* LoginManager.swift */; };
+		5DDF63EB2EF067AE00B8AB9C /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDF63EA2EF067AE00B8AB9C /* MainViewModel.swift */; };
+		5DDF63ED2EF07CBA00B8AB9C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDF63EC2EF07CBA00B8AB9C /* MainView.swift */; };
+		5DDF63F22EF095CA00B8AB9C /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDF63F12EF095CA00B8AB9C /* Models.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		5D1FB9FB2EEED5A200E13569 /* Whistly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Whistly.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D74FB642EF154B9002DD315 /* MainContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContainer.swift; sourceTree = "<group>"; };
 		5D87547F2EEED73F00972A1D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5D8754802EEED73F00972A1D /* WhistlyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhistlyApp.swift; sourceTree = "<group>"; };
 		5D8754842EEEDCBF00972A1D /* NavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationManager.swift; sourceTree = "<group>"; };
@@ -66,6 +73,11 @@
 		5DDF63D92EF03E6700B8AB9C /* PurchasesToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchasesToggle.swift; sourceTree = "<group>"; };
 		5DDF63DF2EF03F0200B8AB9C /* PWFeatureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PWFeatureView.swift; sourceTree = "<group>"; };
 		5DDF63E12EF0430E00B8AB9C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		5DDF63E62EF0669400B8AB9C /* RegistrationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationManager.swift; sourceTree = "<group>"; };
+		5DDF63E82EF066D700B8AB9C /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
+		5DDF63EA2EF067AE00B8AB9C /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		5DDF63EC2EF07CBA00B8AB9C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		5DDF63F12EF095CA00B8AB9C /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +137,9 @@
 		5D87547C2EEED73F00972A1D /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				5D74FB642EF154B9002DD315 /* MainContainer.swift */,
+				5DDF63F12EF095CA00B8AB9C /* Models.swift */,
+				5DDF63E52EF0668900B8AB9C /* Auth */,
 				5D8754862EEEDCC900972A1D /* PurchaseManager.swift */,
 				5D8754842EEEDCBF00972A1D /* NavigationManager.swift */,
 			);
@@ -143,10 +158,12 @@
 		5D87547E2EEED73F00972A1D /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				5DDF63EE2EF0862600B8AB9C /* Main */,
 				5DDF63E12EF0430E00B8AB9C /* ContentView.swift */,
 				5D8754A72EEEDD9900972A1D /* Launch */,
 				5D8754B22EEEE6F500972A1D /* Onboarding */,
 				5DDF63DA2EF03E6700B8AB9C /* Paywall */,
+				5DDF63E32EF043FD00B8AB9C /* Auth */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -193,6 +210,31 @@
 				5DDF63D92EF03E6700B8AB9C /* PurchasesToggle.swift */,
 			);
 			path = Paywall;
+			sourceTree = "<group>";
+		};
+		5DDF63E32EF043FD00B8AB9C /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		5DDF63E52EF0668900B8AB9C /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				5DDF63EA2EF067AE00B8AB9C /* MainViewModel.swift */,
+				5DDF63E82EF066D700B8AB9C /* LoginManager.swift */,
+				5DDF63E62EF0669400B8AB9C /* RegistrationManager.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		5DDF63EE2EF0862600B8AB9C /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				5DDF63EC2EF07CBA00B8AB9C /* MainView.swift */,
+			);
+			path = Main;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -248,6 +290,7 @@
 				5D8754882EEEDCFD00972A1D /* XCLocalSwiftPackageReference "ApphudBase" */,
 				5D87548B2EEEDD0600972A1D /* XCRemoteSwiftPackageReference "AudioKit" */,
 				5D87548E2EEEDD1000972A1D /* XCRemoteSwiftPackageReference "AudioKitEX" */,
+				5DDF63E42EF0610500B8AB9C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5D1FB9FC2EEED5A200E13569 /* Products */;
@@ -279,11 +322,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D8754822EEED73F00972A1D /* WhistlyApp.swift in Sources */,
+				5DDF63ED2EF07CBA00B8AB9C /* MainView.swift in Sources */,
 				5D8754962EEEDD3A00972A1D /* Image+.swift in Sources */,
 				5D8754942EEEDD3300972A1D /* ApphudProduct+.swift in Sources */,
 				5D8754B32EEEE6F500972A1D /* OnboardingView.swift in Sources */,
+				5D74FB652EF154BA002DD315 /* MainContainer.swift in Sources */,
 				5D8754B42EEEE6F500972A1D /* OBFooterView.swift in Sources */,
+				5DDF63EB2EF067AE00B8AB9C /* MainViewModel.swift in Sources */,
 				5D8754872EEEDCC900972A1D /* PurchaseManager.swift in Sources */,
+				5DDF63F22EF095CA00B8AB9C /* Models.swift in Sources */,
 				5DDF63E02EF03F0200B8AB9C /* PWFeatureView.swift in Sources */,
 				5D87549A2EEEDD4400972A1D /* View+.swift in Sources */,
 				5D8754B82EEEE85900972A1D /* BackgroundView.swift in Sources */,
@@ -291,9 +338,11 @@
 				5D8754B62EEEE7E500972A1D /* RoundedCorner.swift in Sources */,
 				5D8754852EEEDCBF00972A1D /* NavigationManager.swift in Sources */,
 				5DDF63E22EF0430E00B8AB9C /* ContentView.swift in Sources */,
+				5DDF63E72EF0669400B8AB9C /* RegistrationManager.swift in Sources */,
 				5D8754982EEEDD3F00972A1D /* UIDevice+.swift in Sources */,
 				5D8754922EEEDD2700972A1D /* ConfigData.swift in Sources */,
 				5D8754AD2EEEE3D400972A1D /* Gradient+.swift in Sources */,
+				5DDF63E92EF066D700B8AB9C /* LoginManager.swift in Sources */,
 				5D87549E2EEEDD7200972A1D /* CustomToggleView.swift in Sources */,
 				5DDF63DC2EF03E6700B8AB9C /* PaywallListView.swift in Sources */,
 				5DDF63DD2EF03E6700B8AB9C /* PaywallView.swift in Sources */,
@@ -540,6 +589,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.6.2;
+			};
+		};
+		5DDF63E42EF0610500B8AB9C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.7.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

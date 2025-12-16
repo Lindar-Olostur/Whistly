@@ -6,15 +6,14 @@ private struct _LaunchScreenContent: UIViewControllerRepresentable {
 }
 
 struct SplashView: View {
-    @EnvironmentObject var premium: PurchaseManager
-    @EnvironmentObject var router: NavigationManager
+    @Environment(MainContainer.self) private var viewModel
     
     var body: some View {
         _LaunchScreenContent()
             .ignoresSafeArea()
-            .onReceive(premium.$products) { array in
-                if premium.paywall != nil {
-                    router.splashFinished()
+            .onChange(of: viewModel.premium.products) {
+                if viewModel.premium.paywall != nil {
+                    viewModel.navigation.splashFinished()
                 }
             }
     }
@@ -22,7 +21,6 @@ struct SplashView: View {
 
 #Preview {
     SplashView()
-        .environmentObject(PurchaseManager.shared)
-        .environmentObject(NavigationManager())
+        .environment(MainContainer())
 }
 

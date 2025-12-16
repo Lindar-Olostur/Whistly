@@ -2,19 +2,18 @@ import SwiftUI
 import StoreKit
 
 struct ContentView: View {
-    @EnvironmentObject var premium: PurchaseManager
-    @EnvironmentObject var navigation: NavigationManager
+    @Environment(MainContainer.self) private var viewModel
     @AppStorage("mustShowInstruction") private var mustShowInstruction = true
     @AppStorage("shouldShowRateAlert") private var shouldShowRateAlert = true
     
     var body: some View {
         VStack(spacing: 0) {
             Group {
-                switch navigation.screen {
+                switch viewModel.navigation.screen {
                 case .splash: SplashView()
                 case .onboarding: OnboardingView()
-                case .onboardingPaywall: PaywallView(isOB: true)
-                case .main: EmptyView()
+                case .paywall: PaywallView(isOB: true)
+                case .main: MainView()
                         .onAppear {
                             Task { @MainActor in
                                 mustShowInstruction = false
@@ -44,7 +43,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .environmentObject(PurchaseManager.shared)
-        .environmentObject(NavigationManager())
+        .environment(MainContainer())
 }
 

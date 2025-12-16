@@ -2,15 +2,17 @@ import AdServices
 import ApphudSDK
 import ApphudBase
 import SwiftUI
+import Observation
 
+@Observable
 @MainActor
-final class PurchaseManager: ObservableObject {
-    @Published private(set) var paywall: ApphudPaywall!
-    @Published private(set) var products: [ApphudProduct] = []
-    @Published private(set) var isSubscribed: Bool = false
-    @Published private(set) var trialProduct: ApphudProduct!
-    @Published private(set) var nonTrialProduct: ApphudProduct!
-    @Published private(set) var lifetimeProduct: ApphudProduct!
+final class PurchaseManager {
+    var paywall: ApphudPaywall!
+    var products: [ApphudProduct] = []
+    var isSubscribed: Bool = false
+    var trialProduct: ApphudProduct!
+    var nonTrialProduct: ApphudProduct!
+    var lifetimeProduct: ApphudProduct!
     
     static var shared = PurchaseManager()
     
@@ -22,7 +24,7 @@ final class PurchaseManager: ObservableObject {
         }
         
 #if DEBUG
-        self.isSubscribed = true
+        self.isSubscribed = false
 #else
         self.isSubscribed = Apphud.hasPremiumAccess()
 #endif

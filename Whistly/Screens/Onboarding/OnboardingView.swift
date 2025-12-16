@@ -2,7 +2,7 @@ import ApphudSDK
 import SwiftUI
 
 struct OnboardingView: View {
-    @EnvironmentObject var router: NavigationManager
+    @Environment(MainContainer.self) private var viewModel
     enum OBScreen: Int, CaseIterable {
         case first, second, third
         
@@ -41,7 +41,7 @@ struct OnboardingView: View {
                             if let nextStep = obStep.next {
                                 obStep = nextStep
                             } else {
-                                router.onboardingFinished()
+                                viewModel.navigation.onboardingFinished()
                             }
                         }
                     } label: {
@@ -79,6 +79,6 @@ struct OnboardingView: View {
 
 #Preview {
     OnboardingView()
-        .environmentObject(NavigationManager())
+        .environment(MainContainer())
 }
 

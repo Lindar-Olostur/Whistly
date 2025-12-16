@@ -1,8 +1,7 @@
 import SwiftUI
 
 struct OBFooterView: View {
-    @EnvironmentObject var premium: PurchaseManager
-    @EnvironmentObject var router: NavigationManager
+    @Environment(MainContainer.self) private var viewModel
     @Environment(\.openURL) var openURL
     @Binding var isRestoring: Bool
     let color: Color = .textSecondary
@@ -22,7 +21,7 @@ struct OBFooterView: View {
             }
             Button {
                 isRestoring = true
-                premium.restorePurchase { success in
+                viewModel.premium.restorePurchase { success in
                     isRestoring = false
                     if success {
                     }
@@ -53,7 +52,6 @@ struct OBFooterView: View {
 
 #Preview {
     OBFooterView(isRestoring: .constant(false))
-        .environmentObject(PurchaseManager.shared)
-        .environmentObject(NavigationManager())
+        .environment(MainContainer())
 }
 

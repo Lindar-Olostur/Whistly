@@ -3,8 +3,7 @@ import ApphudSDK
 import SwiftUI
 
 struct PaywallView: View {
-    @EnvironmentObject var router: NavigationManager
-    @EnvironmentObject var premium: PurchaseManager
+    @Environment(MainContainer.self) private var viewModel
     @Environment(\.dismiss) var dismiss
     @State var isTrial = false
     @State var isPurchasing = false
@@ -28,11 +27,11 @@ struct PaywallView: View {
                     .frame(width: UIScreen.main.bounds.width - 64)
                     .roundCard(padding: 16, color: .fillQuartenary, radius: 16)
                     VStack(spacing: 2) {
-                        Text("Subscribe to unlock all the features\nfor just \(premium.product(for: currentProduct)!.fullPrice)")
+                        Text("Subscribe to unlock all the features\nfor just \(viewModel.premium.product(for: currentProduct)!.fullPrice)")
                             .font(.body)
                         Button {
                             if isOB {
-                                router.goToScreen(.main)
+                                viewModel.navigation.goToScreen(.main)
                             } else {
                                 dismiss()
                             }
@@ -82,7 +81,7 @@ struct PaywallView: View {
         }
         .ignoresSafeArea()
         .onAppear {
-            Apphud.paywallShown(premium.product(for: currentProduct))
+            Apphud.paywallShown(viewModel.premium.product(for: currentProduct))
             
             if currentProduct == .weekTrial {
                 isTrial = true
@@ -91,7 +90,7 @@ struct PaywallView: View {
             }
         }
         .onDisappear {
-            Apphud.paywallClosed(premium.product(for: currentProduct))
+            Apphud.paywallClosed(viewModel.premium.product(for: currentProduct))
         }
         .onChange(of: isTrial) { value in
             currentProduct = value ? .weekTrial : .weekNonTrial
@@ -99,13 +98,13 @@ struct PaywallView: View {
     }
     
     func purchasing() {
-        guard let currentProduct = premium.product(for: currentProduct) else { return }
+        guard let currentProduct = viewModel.premium.product(for: currentProduct) else { return }
         isPurchasing = true
-        premium.makePurchase(product: currentProduct) { success in
+        viewModel.premium.makePurchase(product: currentProduct) { success in
             DispatchQueue.main.async {
                 if success {
                     if isOB {
-                        router.goToScreen(.main)
+                        viewModel.navigation.goToScreen(.main)
                     } else {
                         dismiss()
                     }
@@ -118,8 +117,7 @@ struct PaywallView: View {
 
 #Preview {
     PaywallView(currentProduct: .weekTrial, isOB: false)
-        .environmentObject(NavigationManager())
-        .environmentObject(PurchaseManager.shared)
+        .environment(MainContainer())
         .delayedAppearance(delay: 2.0)
 }
 

@@ -3,7 +3,7 @@ import ApphudSDK
 import ApphudBase
 
 struct PaywallListView: View {
-    @EnvironmentObject var premium: PurchaseManager
+    @Environment(PurchaseManager.self) private var premium
     @Environment(\.dismiss) var dismiss
     @State var product: ApphudProduct?
     
@@ -46,7 +46,7 @@ struct PaywallListView: View {
 
 #Preview {
     PaywallListView()
-        .environmentObject(PurchaseManager.shared)
+        .environment(PurchaseManager.shared)
         .delayedAppearance(delay: 2.0)
 }
 
