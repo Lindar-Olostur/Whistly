@@ -5,4 +5,6 @@ import Observation
 final class MainContainer {
     @MainActor var premium = PurchaseManager.shared
     var navigation = NavigationManager()
+    var storage = TuneStoreManager()
+    var sequencer = MIDISequencer()
 }

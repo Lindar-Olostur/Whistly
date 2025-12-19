@@ -11,28 +11,33 @@ struct MainView: View {
     @State private var triggerActionToReview = false
     
     
-    @State private var showFileImport = false
-    @State private var tuneType: TuneType = .unknown
+    
+    @State private var openTuneManager = false
+    @State private var viewMode: ViewMode = .fingerChart
     
     var body: some View {
         VStack(spacing: 16, content: {
             HStack {
-                Text("Cooley's")
-                    .font(.headline).bold()//TODO name
+                Text(viewModel.storage.loadedTune?.title ?? "Import any ABC")
+                    .font(.headline).bold()
+                    .lineLimit(1)
+                    .truncationMode(.tail)
                 Menu {
                     ForEach(TuneType.allCases, id: \.self) { type in
                         Button {
-                            tuneType = type
+                            if let _ = viewModel.storage.loadedTune {
+                                viewModel.storage.loadedTune?.tuneType = type
+                            }
                         } label: {
                             Text(type.rawValue)
                         }
                     }
                 } label: {
-                    Text(tuneType.rawValue)//TODO type
+                    Text(viewModel.storage.loadedTune?.tuneType.rawValue ?? "tune")
                         .font(.headline).bold()
-                        .foregroundStyle(tuneType == .unknown ? .accentPrimary :  .white)
+                        .foregroundStyle(viewModel.storage.loadedTune?.tuneType == .unknown ? .textSecondary :  .white)
                 }
-
+                .disabled(viewModel.storage.loadedTune == nil)
                 Spacer()
                 Menu {
 //                    Button { //TODO in settings
@@ -42,34 +47,45 @@ struct MainView: View {
 //                        Image(systemName: "person.circle")
 //                    }
                     Button {
-                        // TODO Import
+                        openTuneManager.toggle()
                     } label: {
-                        Text("Import ABC")
-                        Image(systemName: "square.and.arrow.down")
+                        Text("Load")
+                        Image(systemName: "square.and.arrow.up")
                     }
-                    Button {
-                        // TODO Save/Load Tunes
-                    } label: {
-                        Text("Open Tune")
-                        Image(systemName: "music.note")
-                    }
-                    Button {
-                        // TODO Save/Load Sets
-                    } label: {
-                        Text("Open Set")
-                        Image(systemName: "music.note.list")
-                    }
+//                    Button {
+//                        // TODO Save/Load Tunes
+//                    } label: {
+//                        Text("Open Tune")
+//                        Image(systemName: "music.note")
+//                    }
+//                    Button {
+//                        // TODO Save/Load Sets
+//                    } label: {
+//                        Text("Open Set")
+//                        Image(systemName: "music.note.list")
+//                    }
                     Button {
                         // TODO Settings
                     } label: {
-//                        Text("Settings")
+                        Text("Settings")
                         Image(systemName: "gearshape.fill")
                     }
                 } label: {
                     Image(systemName: "line.3.horizontal")
+                        .font(.system(size: 20))
                 }
             }
+            .padding(.vertical, 16)
+//            TuneAndWhistleSectionView(whistleKey: viewModel.storage.loadedTune?.whistleKey,
+//                playableKeys: playableKeys,
+//                viewMode: viewMode,
+//                currentTuneKey: currentTuneKey,
+//                currentDisplayedKey: currentDisplayedKey,
+//                onKeySelect: selectKey
+//            )
+            NotesVizualizationView(viewMode: $viewMode)
             Spacer()
+            PlaybackControlsSectionView()
         })
         .padding(.horizontal, 16)
         .background(BackgroundView())
@@ -96,6 +112,17 @@ struct MainView: View {
             }
         } message: {
             Text("Positive reviews are a powerful motivation for us to excel")
+        }
+        .fullScreenCover(isPresented: $openTuneManager) {
+            TuneManagerView()
+        }
+        .onAppear {
+            #if DEBUG
+            if let testTuneURL = Bundle.main.url(forResource: "testTune", withExtension: "abc"),
+               let tune = viewModel.storage.importFile(from: testTuneURL) {
+                viewModel.storage.loadTune(tune, into: viewModel.sequencer)
+            }
+            #endif
         }
     }
 }

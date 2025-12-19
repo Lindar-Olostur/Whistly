@@ -24,7 +24,7 @@ final class PurchaseManager {
         }
         
 #if DEBUG
-        self.isSubscribed = false
+        self.isSubscribed = true
 #else
         self.isSubscribed = Apphud.hasPremiumAccess()
 #endif

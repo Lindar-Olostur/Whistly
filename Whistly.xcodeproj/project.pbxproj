@@ -8,6 +8,30 @@
 
 /* Begin PBXBuildFile section */
 		5D74FB652EF154BA002DD315 /* MainContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB642EF154B9002DD315 /* MainContainer.swift */; };
+		5D74FB672EF15AFD002DD315 /* TuneStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB662EF15AFD002DD315 /* TuneStoreManager.swift */; };
+		5D74FB692EF16030002DD315 /* testTune.abc in Resources */ = {isa = PBXBuildFile; fileRef = 5D74FB682EF16030002DD315 /* testTune.abc */; };
+		5D74FB6B2EF16176002DD315 /* TuneManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB6A2EF16176002DD315 /* TuneManagerView.swift */; };
+		5D74FB6E2EF16560002DD315 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB6D2EF16560002DD315 /* DocumentPicker.swift */; };
+		5D74FB702EF174F2002DD315 /* ABCTune.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB6F2EF174F2002DD315 /* ABCTune.swift */; };
+		5D74FB722EF17526002DD315 /* KeyCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB712EF17526002DD315 /* KeyCalculator.swift */; };
+		5D74FB752EF17549002DD315 /* KeyDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB742EF17549002DD315 /* KeyDetector.swift */; };
+		5D74FB772EF17556002DD315 /* MIDISequencer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB762EF17556002DD315 /* MIDISequencer.swift */; };
+		5D74FB792EF17571002DD315 /* MIDINote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB782EF17571002DD315 /* MIDINote.swift */; };
+		5D74FB812EF175FE002DD315 /* NoteHoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB7B2EF175FE002DD315 /* NoteHoleView.swift */; };
+		5D74FB822EF175FE002DD315 /* FingeringImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB7E2EF175FE002DD315 /* FingeringImageView.swift */; };
+		5D74FB832EF175FE002DD315 /* FingerChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB7D2EF175FE002DD315 /* FingerChartView.swift */; };
+		5D74FB842EF175FE002DD315 /* ApplicatureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB7A2EF175FE002DD315 /* ApplicatureView.swift */; };
+		5D74FB852EF175FE002DD315 /* FingeringRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB7F2EF175FE002DD315 /* FingeringRowView.swift */; };
+		5D74FB872EF17628002DD315 /* FingerChartStyleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB862EF17628002DD315 /* FingerChartStyleManager.swift */; };
+		5D7EC5A02EF583BD00226693 /* TuneAndWhistleSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7EC59F2EF583BD00226693 /* TuneAndWhistleSectionView.swift */; };
+		5D7EC5A22EF5843C00226693 /* WhistleKeyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7EC5A12EF5843C00226693 /* WhistleKeyPicker.swift */; };
+		5D7EC5A52EF587A100226693 /* NotesVizualizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7EC5A42EF587A100226693 /* NotesVizualizationView.swift */; };
+		5D7EC5AC2EF59A6A00226693 /* PianoRollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7EC5AA2EF59A6A00226693 /* PianoRollView.swift */; };
+		5D7EC5AD2EF59A6A00226693 /* PianoKeysView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7EC5A92EF59A6A00226693 /* PianoKeysView.swift */; };
+		5D7EC5AE2EF59A6A00226693 /* NoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7EC5A82EF59A6A00226693 /* NoteView.swift */; };
+		5D7EC5AF2EF59A6A00226693 /* GridBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7EC5A72EF59A6A00226693 /* GridBackground.swift */; };
+		5D7EC5B12EF5BFC100226693 /* PlaybackControlsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7EC5B02EF5BFC100226693 /* PlaybackControlsSectionView.swift */; };
+		5D7EC5B42EF5BFF300226693 /* ControlButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7EC5B32EF5BFF300226693 /* ControlButton.swift */; };
 		5D8754822EEED73F00972A1D /* WhistlyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8754802EEED73F00972A1D /* WhistlyApp.swift */; };
 		5D8754832EEED73F00972A1D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5D87547F2EEED73F00972A1D /* Assets.xcassets */; };
 		5D8754852EEEDCBF00972A1D /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8754842EEEDCBF00972A1D /* NavigationManager.swift */; };
@@ -47,6 +71,30 @@
 /* Begin PBXFileReference section */
 		5D1FB9FB2EEED5A200E13569 /* Whistly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Whistly.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D74FB642EF154B9002DD315 /* MainContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContainer.swift; sourceTree = "<group>"; };
+		5D74FB662EF15AFD002DD315 /* TuneStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TuneStoreManager.swift; sourceTree = "<group>"; };
+		5D74FB682EF16030002DD315 /* testTune.abc */ = {isa = PBXFileReference; lastKnownFileType = text; path = testTune.abc; sourceTree = "<group>"; };
+		5D74FB6A2EF16176002DD315 /* TuneManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TuneManagerView.swift; sourceTree = "<group>"; };
+		5D74FB6D2EF16560002DD315 /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
+		5D74FB6F2EF174F2002DD315 /* ABCTune.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABCTune.swift; sourceTree = "<group>"; };
+		5D74FB712EF17526002DD315 /* KeyCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCalculator.swift; sourceTree = "<group>"; };
+		5D74FB742EF17549002DD315 /* KeyDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetector.swift; sourceTree = "<group>"; };
+		5D74FB762EF17556002DD315 /* MIDISequencer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MIDISequencer.swift; sourceTree = "<group>"; };
+		5D74FB782EF17571002DD315 /* MIDINote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MIDINote.swift; sourceTree = "<group>"; };
+		5D74FB7A2EF175FE002DD315 /* ApplicatureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicatureView.swift; sourceTree = "<group>"; };
+		5D74FB7B2EF175FE002DD315 /* NoteHoleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteHoleView.swift; sourceTree = "<group>"; };
+		5D74FB7D2EF175FE002DD315 /* FingerChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerChartView.swift; sourceTree = "<group>"; };
+		5D74FB7E2EF175FE002DD315 /* FingeringImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingeringImageView.swift; sourceTree = "<group>"; };
+		5D74FB7F2EF175FE002DD315 /* FingeringRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingeringRowView.swift; sourceTree = "<group>"; };
+		5D74FB862EF17628002DD315 /* FingerChartStyleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerChartStyleManager.swift; sourceTree = "<group>"; };
+		5D7EC59F2EF583BD00226693 /* TuneAndWhistleSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TuneAndWhistleSectionView.swift; sourceTree = "<group>"; };
+		5D7EC5A12EF5843C00226693 /* WhistleKeyPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhistleKeyPicker.swift; sourceTree = "<group>"; };
+		5D7EC5A42EF587A100226693 /* NotesVizualizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesVizualizationView.swift; sourceTree = "<group>"; };
+		5D7EC5A72EF59A6A00226693 /* GridBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridBackground.swift; sourceTree = "<group>"; };
+		5D7EC5A82EF59A6A00226693 /* NoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteView.swift; sourceTree = "<group>"; };
+		5D7EC5A92EF59A6A00226693 /* PianoKeysView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PianoKeysView.swift; sourceTree = "<group>"; };
+		5D7EC5AA2EF59A6A00226693 /* PianoRollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PianoRollView.swift; sourceTree = "<group>"; };
+		5D7EC5B02EF5BFC100226693 /* PlaybackControlsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackControlsSectionView.swift; sourceTree = "<group>"; };
+		5D7EC5B32EF5BFF300226693 /* ControlButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlButton.swift; sourceTree = "<group>"; };
 		5D87547F2EEED73F00972A1D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5D8754802EEED73F00972A1D /* WhistlyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhistlyApp.swift; sourceTree = "<group>"; };
 		5D8754842EEEDCBF00972A1D /* NavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationManager.swift; sourceTree = "<group>"; };
@@ -110,6 +158,86 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5D74FB6C2EF1654D002DD315 /* TuneManager */ = {
+			isa = PBXGroup;
+			children = (
+				5D74FB6D2EF16560002DD315 /* DocumentPicker.swift */,
+				5D74FB6A2EF16176002DD315 /* TuneManagerView.swift */,
+			);
+			path = TuneManager;
+			sourceTree = "<group>";
+		};
+		5D74FB732EF1752A002DD315 /* Sequensor */ = {
+			isa = PBXGroup;
+			children = (
+				5D74FB782EF17571002DD315 /* MIDINote.swift */,
+				5D74FB762EF17556002DD315 /* MIDISequencer.swift */,
+				5D74FB742EF17549002DD315 /* KeyDetector.swift */,
+				5D74FB712EF17526002DD315 /* KeyCalculator.swift */,
+				5D74FB6F2EF174F2002DD315 /* ABCTune.swift */,
+			);
+			path = Sequensor;
+			sourceTree = "<group>";
+		};
+		5D74FB7C2EF175FE002DD315 /* WhistleScheme */ = {
+			isa = PBXGroup;
+			children = (
+				5D74FB7A2EF175FE002DD315 /* ApplicatureView.swift */,
+				5D74FB7B2EF175FE002DD315 /* NoteHoleView.swift */,
+			);
+			path = WhistleScheme;
+			sourceTree = "<group>";
+		};
+		5D74FB802EF175FE002DD315 /* FingerChart */ = {
+			isa = PBXGroup;
+			children = (
+				5D74FB7C2EF175FE002DD315 /* WhistleScheme */,
+				5D74FB7D2EF175FE002DD315 /* FingerChartView.swift */,
+				5D74FB7E2EF175FE002DD315 /* FingeringImageView.swift */,
+				5D74FB7F2EF175FE002DD315 /* FingeringRowView.swift */,
+			);
+			path = FingerChart;
+			sourceTree = "<group>";
+		};
+		5D7EC5A32EF5863C00226693 /* KeyPicker */ = {
+			isa = PBXGroup;
+			children = (
+				5D7EC5A12EF5843C00226693 /* WhistleKeyPicker.swift */,
+				5D7EC59F2EF583BD00226693 /* TuneAndWhistleSectionView.swift */,
+			);
+			path = KeyPicker;
+			sourceTree = "<group>";
+		};
+		5D7EC5A62EF58A5600226693 /* NotesView */ = {
+			isa = PBXGroup;
+			children = (
+				5D7EC5AB2EF59A6A00226693 /* PianoRoll */,
+				5D74FB802EF175FE002DD315 /* FingerChart */,
+				5D7EC5A42EF587A100226693 /* NotesVizualizationView.swift */,
+			);
+			path = NotesView;
+			sourceTree = "<group>";
+		};
+		5D7EC5AB2EF59A6A00226693 /* PianoRoll */ = {
+			isa = PBXGroup;
+			children = (
+				5D7EC5A72EF59A6A00226693 /* GridBackground.swift */,
+				5D7EC5A82EF59A6A00226693 /* NoteView.swift */,
+				5D7EC5A92EF59A6A00226693 /* PianoKeysView.swift */,
+				5D7EC5AA2EF59A6A00226693 /* PianoRollView.swift */,
+			);
+			path = PianoRoll;
+			sourceTree = "<group>";
+		};
+		5D7EC5B22EF5BFD300226693 /* PlaybackPanel */ = {
+			isa = PBXGroup;
+			children = (
+				5D7EC5B32EF5BFF300226693 /* ControlButton.swift */,
+				5D7EC5B02EF5BFC100226693 /* PlaybackControlsSectionView.swift */,
+			);
+			path = PlaybackPanel;
+			sourceTree = "<group>";
+		};
 		5D87547A2EEED73F00972A1D /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -137,6 +265,9 @@
 		5D87547C2EEED73F00972A1D /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				5D74FB862EF17628002DD315 /* FingerChartStyleManager.swift */,
+				5D74FB732EF1752A002DD315 /* Sequensor */,
+				5D74FB662EF15AFD002DD315 /* TuneStoreManager.swift */,
 				5D74FB642EF154B9002DD315 /* MainContainer.swift */,
 				5DDF63F12EF095CA00B8AB9C /* Models.swift */,
 				5DDF63E52EF0668900B8AB9C /* Auth */,
@@ -149,6 +280,7 @@
 		5D87547D2EEED73F00972A1D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5D74FB682EF16030002DD315 /* testTune.abc */,
 				5D8754A32EEEDD8700972A1D /* apphud_paywalls_fallback.json */,
 				5D8754A12EEEDD8100972A1D /* DebugSK.storekit */,
 			);
@@ -164,6 +296,7 @@
 				5D8754B22EEEE6F500972A1D /* Onboarding */,
 				5DDF63DA2EF03E6700B8AB9C /* Paywall */,
 				5DDF63E32EF043FD00B8AB9C /* Auth */,
+				5D74FB6C2EF1654D002DD315 /* TuneManager */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -232,7 +365,10 @@
 		5DDF63EE2EF0862600B8AB9C /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				5D7EC5B22EF5BFD300226693 /* PlaybackPanel */,
+				5D7EC5A62EF58A5600226693 /* NotesView */,
 				5DDF63EC2EF07CBA00B8AB9C /* MainView.swift */,
+				5D7EC5A32EF5863C00226693 /* KeyPicker */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -307,6 +443,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D74FB692EF16030002DD315 /* testTune.abc in Resources */,
 				5D8754A22EEEDD8100972A1D /* DebugSK.storekit in Resources */,
 				5D8754AF2EEEE61B00972A1D /* LaunchScreen.storyboard in Resources */,
 				5D8754A42EEEDD8700972A1D /* apphud_paywalls_fallback.json in Resources */,
@@ -321,14 +458,33 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D74FB6B2EF16176002DD315 /* TuneManagerView.swift in Sources */,
+				5D74FB6E2EF16560002DD315 /* DocumentPicker.swift in Sources */,
+				5D7EC5AC2EF59A6A00226693 /* PianoRollView.swift in Sources */,
+				5D7EC5AD2EF59A6A00226693 /* PianoKeysView.swift in Sources */,
+				5D7EC5AE2EF59A6A00226693 /* NoteView.swift in Sources */,
+				5D7EC5B12EF5BFC100226693 /* PlaybackControlsSectionView.swift in Sources */,
+				5D7EC5AF2EF59A6A00226693 /* GridBackground.swift in Sources */,
+				5D74FB792EF17571002DD315 /* MIDINote.swift in Sources */,
+				5D7EC5A02EF583BD00226693 /* TuneAndWhistleSectionView.swift in Sources */,
+				5D7EC5A22EF5843C00226693 /* WhistleKeyPicker.swift in Sources */,
 				5D8754822EEED73F00972A1D /* WhistlyApp.swift in Sources */,
+				5D74FB752EF17549002DD315 /* KeyDetector.swift in Sources */,
+				5D7EC5B42EF5BFF300226693 /* ControlButton.swift in Sources */,
 				5DDF63ED2EF07CBA00B8AB9C /* MainView.swift in Sources */,
+				5D7EC5A52EF587A100226693 /* NotesVizualizationView.swift in Sources */,
 				5D8754962EEEDD3A00972A1D /* Image+.swift in Sources */,
 				5D8754942EEEDD3300972A1D /* ApphudProduct+.swift in Sources */,
 				5D8754B32EEEE6F500972A1D /* OnboardingView.swift in Sources */,
 				5D74FB652EF154BA002DD315 /* MainContainer.swift in Sources */,
 				5D8754B42EEEE6F500972A1D /* OBFooterView.swift in Sources */,
 				5DDF63EB2EF067AE00B8AB9C /* MainViewModel.swift in Sources */,
+				5D74FB812EF175FE002DD315 /* NoteHoleView.swift in Sources */,
+				5D74FB822EF175FE002DD315 /* FingeringImageView.swift in Sources */,
+				5D74FB832EF175FE002DD315 /* FingerChartView.swift in Sources */,
+				5D74FB842EF175FE002DD315 /* ApplicatureView.swift in Sources */,
+				5D74FB852EF175FE002DD315 /* FingeringRowView.swift in Sources */,
+				5D74FB702EF174F2002DD315 /* ABCTune.swift in Sources */,
 				5D8754872EEEDCC900972A1D /* PurchaseManager.swift in Sources */,
 				5DDF63F22EF095CA00B8AB9C /* Models.swift in Sources */,
 				5DDF63E02EF03F0200B8AB9C /* PWFeatureView.swift in Sources */,
@@ -341,12 +497,16 @@
 				5DDF63E72EF0669400B8AB9C /* RegistrationManager.swift in Sources */,
 				5D8754982EEEDD3F00972A1D /* UIDevice+.swift in Sources */,
 				5D8754922EEEDD2700972A1D /* ConfigData.swift in Sources */,
+				5D74FB772EF17556002DD315 /* MIDISequencer.swift in Sources */,
 				5D8754AD2EEEE3D400972A1D /* Gradient+.swift in Sources */,
 				5DDF63E92EF066D700B8AB9C /* LoginManager.swift in Sources */,
 				5D87549E2EEEDD7200972A1D /* CustomToggleView.swift in Sources */,
 				5DDF63DC2EF03E6700B8AB9C /* PaywallListView.swift in Sources */,
 				5DDF63DD2EF03E6700B8AB9C /* PaywallView.swift in Sources */,
+				5D74FB672EF15AFD002DD315 /* TuneStoreManager.swift in Sources */,
+				5D74FB722EF17526002DD315 /* KeyCalculator.swift in Sources */,
 				5DDF63DE2EF03E6700B8AB9C /* PurchasesToggle.swift in Sources */,
+				5D74FB872EF17628002DD315 /* FingerChartStyleManager.swift in Sources */,
 				5D87549F2EEEDD7200972A1D /* BigButton.swift in Sources */,
 				5D8754A02EEEDD7200972A1D /* ShareSheet.swift in Sources */,
 			);

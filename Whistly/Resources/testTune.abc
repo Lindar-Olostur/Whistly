@@ -1,0 +1,17 @@
+X: 1
+T: from C:\685b7d5046adbd78bb9e1fa115f2e7ef15392f4083681ea704e23ca27fe6d09a_input.tmp
+%***Missing time signature meta command in MIDI file
+M: 4/4
+L: 1/8
+Q:1/4=120
+% Last note suggests Dorian mode tune
+K:G % 1 sharps
+V:1
+dG GG dG GG| \
+de dc BG GG| \
+DG GF GF AB| \
+cB AG FD FA|
+GG GB GG GB| \
+dc BA cB AG| \
+FD FA GE GA| \
+BG cB AD GA|
