@@ -32,29 +32,29 @@ struct NotesVizualizationView: View {
                 
                 selectionIndicator
                 
-                HStack(spacing: 0) {
-                    ForEach(ViewMode.allCases, id: \.self) { mode in
-                        Button(action: {
+            HStack(spacing: 0) {
+                ForEach(ViewMode.allCases, id: \.self) { mode in
+                    Button(action: {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                viewMode = mode
-                            }
-                        }) {
-                            HStack(spacing: 6) {
-                                Image(systemName: mode.icon)
-                                    .font(.system(size: 12))
-                                
-                                Text(mode.rawValue)
-                                    .font(.system(size: 12, weight: .medium))
-                            }
-                            .foregroundColor(viewMode == mode ? .textPrimary : .textSecondary)
+                            viewMode = mode
+                        }
+                    }) {
+                        HStack(spacing: 6) {
+                            Image(systemName: mode.icon)
+                                .font(.system(size: 12))
+                            
+                            Text(mode.rawValue)
+                                .font(.system(size: 12, weight: .medium))
+                        }
+                        .foregroundColor(viewMode == mode ? .textPrimary : .textSecondary)
                             .frame(maxWidth: .infinity)
                             .frame(height: 36)
                             .contentShape(Rectangle())
                         }
                         .buttonStyle(PlainButtonStyle())
-                    }
                 }
-                .padding(4)
+            }
+            .padding(4)
             }
             .frame(width: 256, height: 44)
             if let midiInfo = viewModel.sequencer.midiInfo {

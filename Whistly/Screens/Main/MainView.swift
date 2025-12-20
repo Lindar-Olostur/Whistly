@@ -25,8 +25,8 @@ struct MainView: View {
                 Menu {
                     ForEach(TuneType.allCases, id: \.self) { type in
                         Button {
-                            if let _ = viewModel.storage.loadedTune {
-                                viewModel.storage.loadedTune?.tuneType = type
+                            viewModel.storage.updateLoadedTune { tune in
+                                tune.tuneType = type
                             }
                         } label: {
                             Text(type.rawValue)
@@ -76,13 +76,9 @@ struct MainView: View {
                 }
             }
             .padding(.vertical, 16)
-//            TuneAndWhistleSectionView(whistleKey: viewModel.storage.loadedTune?.whistleKey,
-//                playableKeys: playableKeys,
-//                viewMode: viewMode,
-//                currentTuneKey: currentTuneKey,
-//                currentDisplayedKey: currentDisplayedKey,
-//                onKeySelect: selectKey
-//            )
+            if viewModel.storage.loadedTune != nil {
+                TuneAndWhistleSectionView()
+            }
             NotesVizualizationView(viewMode: $viewMode)
             Spacer()
             PlaybackControlsSectionView()
@@ -118,8 +114,9 @@ struct MainView: View {
         }
         .onAppear {
             #if DEBUG
-            if let testTuneURL = Bundle.main.url(forResource: "testTune", withExtension: "abc"),
-               let tune = viewModel.storage.importFile(from: testTuneURL) {
+            if let tune = viewModel.storage.tunesCache.first {
+//            if let testTuneURL = Bundle.main.url(forResource: "testTune", withExtension: "abc"),
+//               let tune = viewModel.storage.importFile(from: testTuneURL) {
                 viewModel.storage.loadTune(tune, into: viewModel.sequencer)
             }
             #endif

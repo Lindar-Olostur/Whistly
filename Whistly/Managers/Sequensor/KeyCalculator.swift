@@ -1,18 +1,20 @@
 import Foundation
 
 /// Сервис для расчета и работы с музыкальными тональностями
-struct KeyCalculator {
+class KeyCalculator {
     // Используем ту же систему обозначений, что и вистлы: бемоли для Eb, Bb, Ab, диезы для C#, F#
-    private static let noteNames = ["C", "C#", "D", "E♭", "E", "F", "F#", "G", "A♭", "A", "B♭", "B"]
+     let noteNames = ["C", "C#", "D", "E♭", "E", "F", "F#", "G", "A♭", "A", "B♭", "B"]
 
-    private static let noteMap: [String: Int] = [
+     let noteMap: [String: Int] = [
         "C": 0, "C#": 1, "Db": 1, "C♯": 1, "D": 2, "D#": 3, "Eb": 3, "D♯": 3, "E": 4,
         "F": 5, "F#": 6, "Gb": 6, "F♯": 6, "G": 7, "G#": 8, "Ab": 8, "G♯": 8, "A": 9,
         "A#": 10, "Bb": 10, "A♯": 10, "B": 11
     ]
+    
+    let converter = WhistleConverter()
 
     /// Преобразует название ноты в индекс (C=0, C#=1, D=2, ...)
-    static func noteNameToIndex(_ noteName: String) -> Int {
+    func noteNameToIndex(_ noteName: String) -> Int {
         let normalizedName = noteName.replacingOccurrences(of: "♭", with: "b")
         var baseNote = normalizedName
 
@@ -28,7 +30,7 @@ struct KeyCalculator {
     }
 
     /// Вычисляет необходимое транспонирование для перехода от одной тональности к другой
-    static func transposeNeeded(from currentKey: String, to targetKey: String) -> Int {
+    func transposeNeeded(from currentKey: String, to targetKey: String) -> Int {
         let currentKeyIndex = noteNameToIndex(currentKey)
         let targetKeyIndex = noteNameToIndex(targetKey)
         let transposeNeeded = (targetKeyIndex - currentKeyIndex + 12) % 12
@@ -36,7 +38,7 @@ struct KeyCalculator {
     }
 
     /// Вычисляет текущую отображаемую тональность с учетом транспонирования
-    static func currentDisplayedKey(baseKey: String, transpose: Int) -> String {
+    func currentDisplayedKey(baseKey: String, transpose: Int) -> String {
         let baseNoteIndex = noteNameToIndex(baseKey)
         let isMinor = baseKey.lowercased().hasSuffix("m")
 
@@ -47,13 +49,13 @@ struct KeyCalculator {
     }
 
     /// Проверяет, является ли тональность минорной
-    static func isMinorKey(_ key: String) -> Bool {
+    func isMinorKey(_ key: String) -> Bool {
         return key.lowercased().hasSuffix("m")
     }
 
     /// Рассчитывает оптимальное транспонирование с учетом диапазона свистля
     /// Транспонирует мелодию максимально близко к тонике вистла, обеспечивая что все ноты playable и в диапазоне
-    static func optimalTranspose(from baseKey: String, to targetKey: String, notes: [MIDINote], whistleKey: WhistleKey) -> Int {
+    func optimalTranspose(from baseKey: String, to targetKey: String, notes: [MIDINote], whistleKey: WhistleKey) -> Int {
         // Сначала рассчитываем базовое транспонирование для смены тональности
         let baseTranspose = transposeNeeded(from: baseKey, to: targetKey)
 
@@ -101,7 +103,7 @@ struct KeyCalculator {
                 let transposedPitch = UInt8(max(0, min(127, Int(note.pitch) + totalTranspose)))
                 
                 // Проверяем что нота playable (имеет аппликатуру)
-                if WhistleConverter.pitchToFingering(transposedPitch, whistleKey: whistleKey) != nil {
+                if converter.pitchToFingering(transposedPitch, whistleKey: whistleKey) != nil {
                     playableCount += 1
                 } else {
                     allPlayable = false
@@ -147,7 +149,7 @@ struct KeyCalculator {
     
     /// Транспонирует мелодию так, чтобы тоника была на 4 октаве (C4 = MIDI 60)
     /// Находит самую низкую ноту тоники в мелодии и транспонирует её в C4
-    static func transposeToOctave4(key: String, notes: [MIDINote]) -> Int {
+    func transposeToOctave4(key: String, notes: [MIDINote]) -> Int {
         // Получаем индекс тоники (0-11)
         let tonicIndex = noteNameToIndex(key)
         

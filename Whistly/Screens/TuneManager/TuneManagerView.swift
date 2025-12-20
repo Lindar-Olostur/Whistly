@@ -8,6 +8,8 @@ struct TuneManagerView: View {
     @State private var importError: String?
     @State private var showError = false
     @State private var isLoading = false
+    @State private var tuneToDelete: TuneModel?
+    @State private var showDeleteConfirmation = false
     var onTuneImported: ((TuneModel) -> Void)?
     
     var body: some View {
@@ -27,24 +29,52 @@ struct TuneManagerView: View {
                         .font(.system(size: 20))
                 }
             }
+            ScrollView {
             ForEach(viewModel.storage.tunesCache, id: \.id) { tune in
                 HStack(spacing: 8) {
                     Text(tune.title)
                         .lineLimit(1)
                         .truncationMode(.tail)
                     Text(tune.tuneType == .unknown ? "" : tune.tuneType.rawValue)
-                }
+                        Spacer()
+                        Button {
+                            tuneToDelete = tune
+                            showDeleteConfirmation = true
+                        } label: {
+                            Image(systemName: "trash")
+                                .foregroundColor(.red)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    .contentShape(Rectangle())
                 .onTapGesture {
-                    viewModel.storage.loadTune(tune, into: viewModel.sequencer)
+                        viewModel.storage.loadTune(tune, into: viewModel.sequencer)
                     dismiss()
+                    }
                 }
-                //TODO
             }
-            Spacer()
         }
         .padding(.horizontal, 16)
         .background {
             BackgroundView()
+        }
+        .alert("Удалить мелодию?", isPresented: $showDeleteConfirmation) {
+            Button("Отмена", role: .cancel) {
+                tuneToDelete = nil
+            }
+            Button("Удалить", role: .destructive) {
+                if let tune = tuneToDelete {
+                    if viewModel.storage.loadedTune?.id == tune.id {
+                        viewModel.storage.loadedTune = nil
+                    }
+                    viewModel.storage.deleteTune(tune.id)
+                    tuneToDelete = nil
+                }
+            }
+        } message: {
+            if let tune = tuneToDelete {
+                Text("Вы уверены, что хотите удалить \"\(tune.title)\"?")
+            }
         }
 #if os(iOS)
         .sheet(isPresented: $showPicker) {

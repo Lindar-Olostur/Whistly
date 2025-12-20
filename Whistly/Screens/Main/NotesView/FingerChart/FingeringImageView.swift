@@ -11,6 +11,7 @@ struct FingeringImageView: View {
     let width: CGFloat
     let whistleKey: WhistleKey
     let currentBeat: Double
+    let converter = WhistleConverter()
     
     private var isNoteActive: Bool {
         let noteEndBeat = note.startBeat + note.duration
@@ -23,14 +24,14 @@ struct FingeringImageView: View {
         let pitchRange = whistleKey.pitchRange
         let isInRange = note.pitch >= pitchRange.min && note.pitch <= pitchRange.max
 
-        if isInRange, let degree = WhistleConverter.pitchToFingering(note.pitch, whistleKey: whistleKey) {
+        if isInRange, let degree = converter.pitchToFingering(note.pitch, whistleKey: whistleKey) {
             ApplicatureView(note: degree, isActive: isNoteActive, colored: true)
         } else {
             VStack(spacing: 1) {
                 Text("?")
                     .font(.system(size: 18, weight: .medium))
                     .foregroundColor(.gray)
-                Text(WhistleConverter.pitchToNoteName(note.pitch))
+                Text(converter.pitchToNoteName(note.pitch))
                     .font(.system(size: 7))
                     .foregroundColor(.gray.opacity(0.6))
             }

@@ -1,23 +1,59 @@
 import SwiftUI
 
 struct TuneAndWhistleSectionView: View {
-    @Binding var whistleKey: WhistleKey
-    let playableKeys: [String]
-    let currentTuneKey: String
-    let currentDisplayedKey: String
-    let onKeySelect: (String) -> Void
-
+    @Environment(MainContainer.self) private var viewModel
+    let converter = WhistleConverter()
+    private var loadedTune: TuneModel? {
+        viewModel.storage.loadedTune
+    }
+    
+    private var whistleKey: WhistleKey {
+        loadedTune?.whistleKey ?? viewModel.userSettings.defaultWhistleKey
+    }
+    
+    private var currentTuneKey: String {
+        loadedTune?.detectedKey ?? ""
+    }
+    
+    private var currentDisplayedKey: String {
+        loadedTune?.selectedKey ?? loadedTune?.detectedKey ?? ""
+    }
+    
+    private var playableKeys: [String] {
+        guard let originalInfo = viewModel.sequencer.originalTuneInfo,
+              !currentTuneKey.isEmpty else {
+            return []
+        }
+        return converter.findPlayableKeys(
+            for: originalInfo.allNotes,
+            whistleKey: whistleKey,
+            baseKey: currentTuneKey
+        )
+    }
+    
     var body: some View {
         VStack(spacing: 8) {
             HStack(spacing: 12) {
-                WhistleKeyPicker(isMenu: true, whistleKey: $whistleKey)
+                WhistleKeyPicker(
+                    isMenu: true,
+                    whistleKey: Binding(
+                        get: { whistleKey },
+                        set: { newKey in
+                            viewModel.storage.updateLoadedTune { tune in
+                                tune.whistleKey = newKey
+                            }
+                        }
+                    )
+                )
 
                 if !playableKeys.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(playableKeys, id: \.self) { key in
                                 Button(action: {
-                                    onKeySelect(key)
+                                    viewModel.storage.updateLoadedTune { tune in
+                                        tune.selectedKey = key
+                                    }
                                 }) {
                                     Text(key)
                                         .font(.system(size: 12, weight: .medium))
@@ -35,9 +71,9 @@ struct TuneAndWhistleSectionView: View {
                     }
                     .frame(height: 30)
                 } else {
-                    Text("Нет доступных тональностей")
+                    Text("There are no suitable keys")
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.white.opacity(0.5))
+                        .foregroundColor(.textSecondary)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 13)
                         .background(
@@ -55,13 +91,15 @@ struct TuneAndWhistleSectionView: View {
 }
 
 #Preview {
-    @Previewable @State var key: WhistleKey = .D
-    TuneAndWhistleSectionView(
-        whistleKey: $key,
-        playableKeys: ["C", "D", "G", "A"],
-        currentTuneKey: "C",
-        currentDisplayedKey: "C",
-        onKeySelect: { _ in }
-    )
+    @Previewable @State var viewModel = MainContainer()
+        TuneAndWhistleSectionView()
+            .frame(width: 400)
+            .environment(viewModel)
+            .onAppear {
+                if let tune = viewModel.storage.tunesCache.first {
+                    viewModel.storage.loadedTune = tune
+                }
+            }
     .frame(width: 400)
+    .environment(MainContainer())
 }

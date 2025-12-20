@@ -92,6 +92,43 @@ enum WhistleKey: String, CaseIterable, Codable {
         case .Eb:      return (63, 84)  // Eb4 - C6
         }
     }
+    
+    func from(tuneKey: String) -> WhistleKey {
+        let key = tuneKey.trimmingCharacters(in: .whitespaces).uppercased()
+        
+        guard !key.isEmpty else { return .D }
+        
+        let firstChar = key.prefix(1)
+        var noteName = String(firstChar)
+        
+        if key.count >= 2 {
+            let second = key[key.index(key.startIndex, offsetBy: 1)]
+            if second == "#" {
+                noteName += "#"
+            } else if second == "B" && key.prefix(2) != "BB" {
+                // Проверяем что это бемоль, а не начало "BB" или "BMAJ"
+                if key.hasPrefix("BB") || key.hasPrefix("BM") {
+                    noteName = "B"
+                }
+            }
+        }
+        
+        switch noteName {
+        case "EB", "E♭": return .Eb
+        case "D": return .D
+        case "C#", "DB", "D♭": return .Csharp
+        case "C": return .C
+        case "B": return .B
+        case "BB", "B♭", "A#": return .Bb
+        case "A": return .A
+        case "AB", "A♭", "G#": return .Ab
+        case "G": return .G
+        case "F#", "GB", "G♭": return .Fsharp
+        case "F": return .F
+        case "E": return .E
+        default: return .D
+        }
+    }
 }
 
 enum LoopType: String, Codable {
@@ -283,11 +320,11 @@ enum WhistleScaleDegree: String, CaseIterable {
 
 // MARK: - Pitch to Degree Converter
 
-struct WhistleConverter {
+class WhistleConverter {
     
     /// Преобразует MIDI pitch в аппликатуру на выбранном вистле
     /// Возвращает nil если нота не может быть сыграна на данном вистле (хроматическая нота)
-    static func pitchToFingering(_ pitch: UInt8, whistleKey: WhistleKey) -> WhistleScaleDegree? {
+    func pitchToFingering(_ pitch: UInt8, whistleKey: WhistleKey) -> WhistleScaleDegree? {
         let midiPitch = Int(pitch)
         let pitchNote = midiPitch % 12  // Нота без октавы (0-11)
         let whistleTonicNote = whistleKey.tonicNote
@@ -319,7 +356,7 @@ struct WhistleConverter {
         }
     }
     
-    static func pitchToNoteName(_ pitch: UInt8) -> String {
+    func pitchToNoteName(_ pitch: UInt8) -> String {
         let noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
         let octave = Int(pitch) / 12 - 1
         let note = Int(pitch) % 12
@@ -341,14 +378,14 @@ struct WhistleConverter {
     ///   - baseKey: базовая тональность мелодии (для расчета результирующих тональностей)
     /// - Returns: массив уникальных тональностей мелодии, где все ноты playable на данном вистле и в его диапазоне
     /// TODO еще момент: есть мелодии у которых очень узкий диапазон и на одном вистле их можно сыграть как в пеовой октаве так и с передувом. но в предложенных тональностях только один вариант. нам надо различать такие варианты и показывать оба
-    static func findPlayableKeys(for notes: [MIDINote], whistleKey: WhistleKey, baseKey: String) -> [String] {
+    func findPlayableKeys(for notes: [MIDINote], whistleKey: WhistleKey, baseKey: String) -> [String] {
         let variants = findPlayableKeyVariants(for: notes, whistleKey: whistleKey, baseKey: baseKey)
         return variants.map { $0.key }
     }
 
     /// Находит все варианты тональностей с информацией о транспонировании
     /// Для каждой тональности выбирается вариант с самым низким диапазоном мелодии
-    static func findPlayableKeyVariants(for notes: [MIDINote], whistleKey: WhistleKey, baseKey: String) -> [PlayableKeyVariant] {
+     func findPlayableKeyVariants(for notes: [MIDINote], whistleKey: WhistleKey, baseKey: String) -> [PlayableKeyVariant] {
         var playableVariants = [PlayableKeyVariant]()
 
         // Получаем диапазон свистля
@@ -449,8 +486,42 @@ struct WhistleConverter {
         return sortedVariants
     }
 
+    // MARK: - Сортировка по близости к тонике вистла
+    private func sortByTonicProximity(variants: [PlayableKeyVariant], whistleKey: WhistleKey) -> [PlayableKeyVariant] {
+        
+        let whistleTonicIndex = whistleKey.tonicNote
+        
+        func circularDistance(_ index1: Int, _ index2: Int) -> Int {
+            let diff = abs(index1 - index2)
+            return min(diff, 12 - diff)
+        }
+        
+        let sorted = variants.sorted { variant1, variant2 in
+            let index1 = noteNameToIndex(variant1.key)
+            let index2 = noteNameToIndex(variant2.key)
+            let distance1 = circularDistance(index1, whistleTonicIndex)
+            let distance2 = circularDistance(index2, whistleTonicIndex)
+            
+            if distance1 == distance2 {
+                return index1 < index2
+            }
+            return distance1 < distance2
+        }
+        
+        print("━━━ Итоговая сортировка по близости к \(whistleKey.displayName) ━━━")
+        for (index, variant) in sorted.enumerated() {
+            let keyIndex = noteNameToIndex(variant.key)
+            let distance = circularDistance(keyIndex, whistleTonicIndex)
+            let transposeStr = variant.transpose > 0 ? "+\(variant.transpose)" : "\(variant.transpose)"
+            print("  \(index + 1). \(variant.key) (расстояние: \(distance), transpose: \(transposeStr))")
+        }
+        print("")
+        
+        return sorted
+    }
+
     /// Преобразует название ноты в индекс (C=0, C#=1, D=2, ...)
-    private static func noteNameToIndex(_ noteName: String) -> Int {
+    func noteNameToIndex(_ noteName: String) -> Int {
         let normalizedName = noteName.replacingOccurrences(of: "♭", with: "b")
         let noteMap: [String: Int] = [
             "C": 0, "C#": 1, "Db": 1, "C♯": 1, "D": 2, "D#": 3, "Eb": 3, "D♯": 3, "E": 4,
@@ -472,7 +543,7 @@ struct WhistleConverter {
 
     /// Преобразует индекс в название ноты
     /// Использует ту же систему обозначений, что и вистлы: бемоли для Eb, Bb, Ab, диезы для C#, F#
-    private static func indexToNoteName(_ index: Int, isMinor: Bool) -> String {
+    func indexToNoteName(_ index: Int, isMinor: Bool) -> String {
         let noteNames = ["C", "C#", "D", "E♭", "E", "F", "F#", "G", "A♭", "A", "B♭", "B"]
         let noteName = noteNames[(index + 12) % 12]
         return isMinor ? "\(noteName)m" : noteName
@@ -480,44 +551,3 @@ struct WhistleConverter {
 
 }
 
-// MARK: - Key Converter
-
-extension WhistleKey {
-    /// Преобразует тональность мелодии (например "Dmaj", "Ador", "G") в строй вистла
-    static func from(tuneKey: String) -> WhistleKey {
-        let key = tuneKey.trimmingCharacters(in: .whitespaces).uppercased()
-        
-        guard !key.isEmpty else { return .D }
-        
-        let firstChar = key.prefix(1)
-        var noteName = String(firstChar)
-        
-        if key.count >= 2 {
-            let second = key[key.index(key.startIndex, offsetBy: 1)]
-            if second == "#" {
-                noteName += "#"
-            } else if second == "B" && key.prefix(2) != "BB" {
-                // Проверяем что это бемоль, а не начало "BB" или "BMAJ"
-                if key.hasPrefix("BB") || key.hasPrefix("BM") {
-                    noteName = "B"
-                }
-            }
-        }
-        
-        switch noteName {
-        case "EB", "E♭": return .Eb
-        case "D": return .D
-        case "C#", "DB", "D♭": return .Csharp
-        case "C": return .C
-        case "B": return .B
-        case "BB", "B♭", "A#": return .Bb
-        case "A": return .A
-        case "AB", "A♭", "G#": return .Ab
-        case "G": return .G
-        case "F#", "GB", "G♭": return .Fsharp
-        case "F": return .F
-        case "E": return .E
-        default: return .D
-        }
-    }
-}

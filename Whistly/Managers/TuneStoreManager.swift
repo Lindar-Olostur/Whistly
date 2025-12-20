@@ -75,6 +75,13 @@ final class TuneStoreManager {
         saveTune(tune)
     }
     
+    func updateLoadedTune(_ update: (inout TuneModel) -> Void) {
+        guard var tune = loadedTune else { return }
+        update(&tune)
+        loadedTune = tune
+        saveTune(tune)
+    }
+    
     func searchTunes(query: String) -> [TuneModel] {
         let tunes = fetchAllTunes()
         guard !query.isEmpty else { return tunes }
