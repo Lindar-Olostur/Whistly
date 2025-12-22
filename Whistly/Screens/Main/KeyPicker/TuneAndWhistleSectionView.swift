@@ -19,16 +19,12 @@ struct TuneAndWhistleSectionView: View {
         loadedTune?.selectedKey ?? loadedTune?.detectedKey ?? ""
     }
     
-    private var playableKeys: [String] {
+    private var playableKeys: [PlayableKey] {
         guard let originalInfo = viewModel.sequencer.originalTuneInfo,
               !currentTuneKey.isEmpty else {
             return []
         }
-        return converter.findPlayableKeys(
-            for: originalInfo.allNotes,
-            whistleKey: whistleKey,
-            baseKey: currentTuneKey
-        )
+        return converter.rangeFinder(for: whistleKey, tunes: converter.keyFinder(for: whistleKey, tune: originalInfo.allNotes))
     }
     
     var body: some View {
@@ -42,6 +38,31 @@ struct TuneAndWhistleSectionView: View {
                             viewModel.storage.updateLoadedTune { tune in
                                 tune.whistleKey = newKey
                             }
+                            
+                            guard let originalInfo = viewModel.sequencer.originalTuneInfo,
+                                  !currentTuneKey.isEmpty else {
+                                return
+                            }
+                            
+                            let newPlayableKeys = converter.rangeFinder(
+                                for: newKey,
+                                tunes: converter.keyFinder(for: newKey, tune: originalInfo.allNotes)
+                            )
+                            
+                            if let firstKey = newPlayableKeys.first {
+                                let firstNote = originalInfo.allNotes.min(by: { $0.startBeat < $1.startBeat })
+                                guard let firstNotePitch = firstNote?.pitch else {
+                                    return
+                                }
+                                
+                                let transpose = Int(firstKey.rootNote) - Int(firstNotePitch)
+                                
+                                viewModel.storage.updateLoadedTune { tune in
+                                    tune.selectedKey = firstKey.keyName
+                                    tune.transpose = transpose
+                                }
+                                viewModel.sequencer.transpose = transpose
+                            }
                         }
                     )
                 )
@@ -51,18 +72,31 @@ struct TuneAndWhistleSectionView: View {
                         HStack(spacing: 8) {
                             ForEach(playableKeys, id: \.self) { key in
                                 Button(action: {
-                                    viewModel.storage.updateLoadedTune { tune in
-                                        tune.selectedKey = key
+                                    guard let originalInfo = viewModel.sequencer.originalTuneInfo else {
+                                        return
                                     }
+                                    
+                                    let firstNote = originalInfo.allNotes.min(by: { $0.startBeat < $1.startBeat })
+                                    guard let firstNotePitch = firstNote?.pitch else {
+                                        return
+                                    }
+                                    
+                                    let transpose = Int(key.rootNote) - Int(firstNotePitch)
+                                    
+                                    viewModel.storage.updateLoadedTune { tune in
+                                        tune.selectedKey = key.keyName
+                                        tune.transpose = transpose
+                                    }
+                                    viewModel.sequencer.transpose = transpose
                                 }) {
-                                    Text(key)
+                                    Text(key.keyName)
                                         .font(.system(size: 12, weight: .medium))
-                                        .foregroundColor(key == currentDisplayedKey ? .accentTertiary : .textSecondary)
+                                        .foregroundColor(key.keyName == currentDisplayedKey ? .accentTertiary : .textSecondary)
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 13)
                                         .background(
                                             RoundedRectangle(cornerRadius: 6)
-                                                .fill(key == currentDisplayedKey ? Color.orange.opacity(0.2) : Color.white.opacity(0.1))
+                                                .fill(key.keyName == currentDisplayedKey ? Color.orange.opacity(0.2) : Color.white.opacity(0.1))
                                         )
                                 }
                             }
@@ -86,7 +120,6 @@ struct TuneAndWhistleSectionView: View {
                 Spacer()
             }
         }
-        .padding(.horizontal, 20)
     }
 }
 

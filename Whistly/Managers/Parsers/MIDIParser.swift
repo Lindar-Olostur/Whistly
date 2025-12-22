@@ -12,7 +12,7 @@ struct MIDINote: Identifiable, Equatable {
     let channel: UInt8        // MIDI канал
     
     var noteName: String {
-        let noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+        let noteNames = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
         let octave = Int(pitch) / 12 - 1
         let note = Int(pitch) % 12
         return "\(noteNames[note])\(octave)"

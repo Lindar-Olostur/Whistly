@@ -38,7 +38,7 @@ struct KeyDetector {
         3.17   // B
     ]
     
-    private static let noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+    private static let noteNames = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
     
     /// Определяет тональность по массиву нот
     /// Возвращает строку вида "D", "Am", "G" и т.д.

@@ -43,7 +43,7 @@ struct FingeringRowView: View {
 #Preview {
     FingeringRowView(
         notes: [
-            MIDINote(pitch: 62, velocity: 80, startBeat: 0, duration: 2, channel: 0),
+            MIDINote(pitch: 60, velocity: 80, startBeat: 0, duration: 2, channel: 0),
             MIDINote(pitch: 69, velocity: 80, startBeat: 2, duration: 2, channel: 0)
         ],
         currentBeat: 1,
@@ -53,7 +53,7 @@ struct FingeringRowView: View {
         totalWidth: 200,
         offset: 0,
         isPlaying: false,
-        whistleKey: .G
+        whistleKey: .D
     )
     .frame(width: 200, height: 70)
     .background(Color.gray.opacity(0.1))

@@ -12,11 +12,11 @@
 		5D74FB692EF16030002DD315 /* testTune.abc in Resources */ = {isa = PBXBuildFile; fileRef = 5D74FB682EF16030002DD315 /* testTune.abc */; };
 		5D74FB6B2EF16176002DD315 /* TuneManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB6A2EF16176002DD315 /* TuneManagerView.swift */; };
 		5D74FB6E2EF16560002DD315 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB6D2EF16560002DD315 /* DocumentPicker.swift */; };
-		5D74FB702EF174F2002DD315 /* ABCTune.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB6F2EF174F2002DD315 /* ABCTune.swift */; };
+		5D74FB702EF174F2002DD315 /* ABCParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB6F2EF174F2002DD315 /* ABCParser.swift */; };
 		5D74FB722EF17526002DD315 /* KeyCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB712EF17526002DD315 /* KeyCalculator.swift */; };
 		5D74FB752EF17549002DD315 /* KeyDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB742EF17549002DD315 /* KeyDetector.swift */; };
 		5D74FB772EF17556002DD315 /* MIDISequencer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB762EF17556002DD315 /* MIDISequencer.swift */; };
-		5D74FB792EF17571002DD315 /* MIDINote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB782EF17571002DD315 /* MIDINote.swift */; };
+		5D74FB792EF17571002DD315 /* MIDIParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB782EF17571002DD315 /* MIDIParser.swift */; };
 		5D74FB812EF175FE002DD315 /* NoteHoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB7B2EF175FE002DD315 /* NoteHoleView.swift */; };
 		5D74FB822EF175FE002DD315 /* FingeringImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB7E2EF175FE002DD315 /* FingeringImageView.swift */; };
 		5D74FB832EF175FE002DD315 /* FingerChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74FB7D2EF175FE002DD315 /* FingerChartView.swift */; };
@@ -56,6 +56,9 @@
 		5D8754B42EEEE6F500972A1D /* OBFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8754B02EEEE6F500972A1D /* OBFooterView.swift */; };
 		5D8754B62EEEE7E500972A1D /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8754B52EEEE7E500972A1D /* RoundedCorner.swift */; };
 		5D8754B82EEEE85900972A1D /* BackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8754B72EEEE85900972A1D /* BackgroundView.swift */; };
+		5DCA56F42EF71175006D306B /* ModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCA56F32EF71175006D306B /* ModelTest.swift */; };
+		5DCA56F62EF72939006D306B /* Int+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCA56F52EF72939006D306B /* Int+.swift */; };
+		5DCA56F82EF7D93B006D306B /* MeasureSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCA56F72EF7D93B006D306B /* MeasureSelectorView.swift */; };
 		5DDF63DC2EF03E6700B8AB9C /* PaywallListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDF63D82EF03E6700B8AB9C /* PaywallListView.swift */; };
 		5DDF63DD2EF03E6700B8AB9C /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDF63D62EF03E6700B8AB9C /* PaywallView.swift */; };
 		5DDF63DE2EF03E6700B8AB9C /* PurchasesToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDF63D92EF03E6700B8AB9C /* PurchasesToggle.swift */; };
@@ -75,11 +78,11 @@
 		5D74FB682EF16030002DD315 /* testTune.abc */ = {isa = PBXFileReference; lastKnownFileType = text; path = testTune.abc; sourceTree = "<group>"; };
 		5D74FB6A2EF16176002DD315 /* TuneManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TuneManagerView.swift; sourceTree = "<group>"; };
 		5D74FB6D2EF16560002DD315 /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
-		5D74FB6F2EF174F2002DD315 /* ABCTune.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABCTune.swift; sourceTree = "<group>"; };
+		5D74FB6F2EF174F2002DD315 /* ABCParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABCParser.swift; sourceTree = "<group>"; };
 		5D74FB712EF17526002DD315 /* KeyCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCalculator.swift; sourceTree = "<group>"; };
 		5D74FB742EF17549002DD315 /* KeyDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetector.swift; sourceTree = "<group>"; };
 		5D74FB762EF17556002DD315 /* MIDISequencer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MIDISequencer.swift; sourceTree = "<group>"; };
-		5D74FB782EF17571002DD315 /* MIDINote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MIDINote.swift; sourceTree = "<group>"; };
+		5D74FB782EF17571002DD315 /* MIDIParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MIDIParser.swift; sourceTree = "<group>"; };
 		5D74FB7A2EF175FE002DD315 /* ApplicatureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicatureView.swift; sourceTree = "<group>"; };
 		5D74FB7B2EF175FE002DD315 /* NoteHoleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteHoleView.swift; sourceTree = "<group>"; };
 		5D74FB7D2EF175FE002DD315 /* FingerChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerChartView.swift; sourceTree = "<group>"; };
@@ -116,6 +119,9 @@
 		5D8754B12EEEE6F500972A1D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		5D8754B52EEEE7E500972A1D /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
 		5D8754B72EEEE85900972A1D /* BackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundView.swift; sourceTree = "<group>"; };
+		5DCA56F32EF71175006D306B /* ModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelTest.swift; sourceTree = "<group>"; };
+		5DCA56F52EF72939006D306B /* Int+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+.swift"; sourceTree = "<group>"; };
+		5DCA56F72EF7D93B006D306B /* MeasureSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureSelectorView.swift; sourceTree = "<group>"; };
 		5DDF63D62EF03E6700B8AB9C /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		5DDF63D82EF03E6700B8AB9C /* PaywallListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallListView.swift; sourceTree = "<group>"; };
 		5DDF63D92EF03E6700B8AB9C /* PurchasesToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchasesToggle.swift; sourceTree = "<group>"; };
@@ -170,11 +176,9 @@
 		5D74FB732EF1752A002DD315 /* Sequensor */ = {
 			isa = PBXGroup;
 			children = (
-				5D74FB782EF17571002DD315 /* MIDINote.swift */,
 				5D74FB762EF17556002DD315 /* MIDISequencer.swift */,
 				5D74FB742EF17549002DD315 /* KeyDetector.swift */,
 				5D74FB712EF17526002DD315 /* KeyCalculator.swift */,
-				5D74FB6F2EF174F2002DD315 /* ABCTune.swift */,
 			);
 			path = Sequensor;
 			sourceTree = "<group>";
@@ -258,6 +262,7 @@
 				5D8754972EEEDD3F00972A1D /* UIDevice+.swift */,
 				5D8754952EEEDD3A00972A1D /* Image+.swift */,
 				5D8754932EEEDD3300972A1D /* ApphudProduct+.swift */,
+				5DCA56F52EF72939006D306B /* Int+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -265,6 +270,7 @@
 		5D87547C2EEED73F00972A1D /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				5DCA56D32EF70201006D306B /* Parsers */,
 				5D74FB862EF17628002DD315 /* FingerChartStyleManager.swift */,
 				5D74FB732EF1752A002DD315 /* Sequensor */,
 				5D74FB662EF15AFD002DD315 /* TuneStoreManager.swift */,
@@ -304,6 +310,7 @@
 		5D8754812EEED73F00972A1D /* Whistly */ = {
 			isa = PBXGroup;
 			children = (
+				5DCA56F22EF71162006D306B /* Tests */,
 				5D8754912EEEDD2700972A1D /* ConfigData.swift */,
 				5D87547A2EEED73F00972A1D /* Components */,
 				5D87547B2EEED73F00972A1D /* Extensions */,
@@ -332,6 +339,23 @@
 				5D8754B12EEEE6F500972A1D /* OnboardingView.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		5DCA56D32EF70201006D306B /* Parsers */ = {
+			isa = PBXGroup;
+			children = (
+				5D74FB782EF17571002DD315 /* MIDIParser.swift */,
+				5D74FB6F2EF174F2002DD315 /* ABCParser.swift */,
+			);
+			path = Parsers;
+			sourceTree = "<group>";
+		};
+		5DCA56F22EF71162006D306B /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				5DCA56F32EF71175006D306B /* ModelTest.swift */,
+			);
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		5DDF63DA2EF03E6700B8AB9C /* Paywall */ = {
@@ -365,6 +389,7 @@
 		5DDF63EE2EF0862600B8AB9C /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				5DCA56F72EF7D93B006D306B /* MeasureSelectorView.swift */,
 				5D7EC5B22EF5BFD300226693 /* PlaybackPanel */,
 				5D7EC5A62EF58A5600226693 /* NotesView */,
 				5DDF63EC2EF07CBA00B8AB9C /* MainView.swift */,
@@ -464,8 +489,9 @@
 				5D7EC5AD2EF59A6A00226693 /* PianoKeysView.swift in Sources */,
 				5D7EC5AE2EF59A6A00226693 /* NoteView.swift in Sources */,
 				5D7EC5B12EF5BFC100226693 /* PlaybackControlsSectionView.swift in Sources */,
+				5DCA56F82EF7D93B006D306B /* MeasureSelectorView.swift in Sources */,
 				5D7EC5AF2EF59A6A00226693 /* GridBackground.swift in Sources */,
-				5D74FB792EF17571002DD315 /* MIDINote.swift in Sources */,
+				5D74FB792EF17571002DD315 /* MIDIParser.swift in Sources */,
 				5D7EC5A02EF583BD00226693 /* TuneAndWhistleSectionView.swift in Sources */,
 				5D7EC5A22EF5843C00226693 /* WhistleKeyPicker.swift in Sources */,
 				5D8754822EEED73F00972A1D /* WhistlyApp.swift in Sources */,
@@ -482,9 +508,10 @@
 				5D74FB812EF175FE002DD315 /* NoteHoleView.swift in Sources */,
 				5D74FB822EF175FE002DD315 /* FingeringImageView.swift in Sources */,
 				5D74FB832EF175FE002DD315 /* FingerChartView.swift in Sources */,
+				5DCA56F62EF72939006D306B /* Int+.swift in Sources */,
 				5D74FB842EF175FE002DD315 /* ApplicatureView.swift in Sources */,
 				5D74FB852EF175FE002DD315 /* FingeringRowView.swift in Sources */,
-				5D74FB702EF174F2002DD315 /* ABCTune.swift in Sources */,
+				5D74FB702EF174F2002DD315 /* ABCParser.swift in Sources */,
 				5D8754872EEEDCC900972A1D /* PurchaseManager.swift in Sources */,
 				5DDF63F22EF095CA00B8AB9C /* Models.swift in Sources */,
 				5DDF63E02EF03F0200B8AB9C /* PWFeatureView.swift in Sources */,
@@ -497,6 +524,7 @@
 				5DDF63E72EF0669400B8AB9C /* RegistrationManager.swift in Sources */,
 				5D8754982EEEDD3F00972A1D /* UIDevice+.swift in Sources */,
 				5D8754922EEEDD2700972A1D /* ConfigData.swift in Sources */,
+				5DCA56F42EF71175006D306B /* ModelTest.swift in Sources */,
 				5D74FB772EF17556002DD315 /* MIDISequencer.swift in Sources */,
 				5D8754AD2EEEE3D400972A1D /* Gradient+.swift in Sources */,
 				5DDF63E92EF066D700B8AB9C /* LoginManager.swift in Sources */,

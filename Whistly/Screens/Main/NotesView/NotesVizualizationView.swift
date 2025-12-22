@@ -14,7 +14,7 @@ struct NotesVizualizationView: View {
             )
             
             RoundedRectangle(cornerRadius: 8)
-                .fill(.accentTertiary)
+                .fill(LinearGradient.primary)
                 .frame(width: buttonWidth)
                 .offset(x: 4 + selectedIndex * buttonWidth)
                 .animation(
@@ -65,7 +65,7 @@ struct NotesVizualizationView: View {
                             case .pianoRoll:
                                 PianoRollView(midiInfo: midiInfo)
                             case .fingerChart:
-                                FingerChartView(midiInfo: midiInfo, whistleKey: .D)//TODO whistleKey
+                                FingerChartView(midiInfo: midiInfo, whistleKey: viewModel.storage.loadedTune?.whistleKey ?? viewModel.userSettings.defaultWhistleKey)
                             }
                         }
                         .tag(mode)

@@ -6,7 +6,7 @@ struct ABCTune: Identifiable {
     let id: Int                    // X: номер
     let title: String              // T: название
     let meter: String              // M: размер (4/4, 6/8)
-    let defaultLength: Double      // L: базовая длина (1/8 = 0.5 бита)
+    let defaultLength: Double      // L: базовая длительность (1/8 = 0.5 доли)
     let key: String                // K: тональность
     let notes: [MIDINote]          // Распарсенные ноты
     let totalBeats: Double
@@ -60,9 +60,8 @@ class ABCParser {
     
     /// Определяет ключевые знаки для любой тональности (мажор, минор, лады)
     private static func getKeySignature(for key: String) -> (sharps: Set<Character>, flats: Set<Character>) {
-        let keyTrimmed = key.trimmingCharacters(in: .whitespaces)
+        let keyTrimmed = key.trimmingCharacters(in: .whitespaces).uppercased()
         
-        // Проверяем модальные тональности (Ador, Edor, Amix, и т.д.)
         let modes = ["dor", "phr", "lyd", "mix", "loc", "m", "min"]
         var baseNote = keyTrimmed
         var isMinor = false
@@ -80,22 +79,21 @@ class ABCParser {
             }
         }
         
-        // Убираем "maj" если есть
-        baseNote = baseNote.replacingOccurrences(of: "maj", with: "")
+        baseNote = baseNote.replacingOccurrences(of: "maj", with: "", options: .caseInsensitive)
                           .trimmingCharacters(in: .whitespaces)
         
-        // Определяем эквивалентный мажор
+        if baseNote.isEmpty {
+            baseNote = "C"
+        }
+        
         var majorKey = baseNote
         
         if isMinor {
-            // Минор → параллельный мажор
             majorKey = relativeMinorToMajor[baseNote] ?? baseNote
         } else if isDorian {
-            // Дориан → соответствующий мажор
             majorKey = dorianToMajor[baseNote] ?? baseNote
         }
         
-        // Получаем знаки для мажорной тональности
         let sharps = keySignatures[majorKey] ?? []
         let flats = keyFlats[majorKey] ?? []
         

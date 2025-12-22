@@ -3,8 +3,7 @@ T: My Tune
 M: 4/4
 L: 1/8
 Q:1/4=120
-% Last note suggests Dorian mode tune
-K:G % 1 sharps
+K:G
 V:1
 dG GG dG GG| \
 de dc BG GG| \
