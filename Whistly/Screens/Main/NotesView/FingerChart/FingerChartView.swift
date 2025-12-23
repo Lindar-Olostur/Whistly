@@ -5,7 +5,7 @@ enum ChartScale {
     
     var fingeringRowHeight: CGFloat {
         switch self {
-        case .portrait: 90
+        case .portrait: 130
         case .landscape: 150
         }
     }
@@ -28,7 +28,6 @@ struct FingerChartView: View {
     }
     var whistleKey: WhistleKey 
     
-    // Настройки
     var mode: ChartScale = .portrait
     private let pianoKeyWidth: CGFloat = 35
     
@@ -65,19 +64,17 @@ struct FingerChartView: View {
                 isPlaying: isPlaying,
                 whistleKey: whistleKey
             )
-//                    .frame(height: mode.fingeringRowHeight)
-            .clipped()
+            
         }
-        .frame(maxHeight: 110)
+        .frame(maxHeight: 156)
 //        .background(Color(red: 0.1, green: 0.1, blue: 0.12))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 
 #Preview {
-    if let url = Bundle.main.url(forResource: "silverspear", withExtension: "mid"),
-       let info = MIDIParser.parse(url: url) {
-        FingerChartView(midiInfo: info, whistleKey: .D)
+    if let url = Bundle.main.url(forResource: "testTune", withExtension: "abc"), let tune = ABCParser.parseFile(url: url)?.first {
+        FingerChartView(midiInfo: ABCParser.toMIDIFileInfo(tune), whistleKey: .D)
         .environment(MainContainer())
     }
 }

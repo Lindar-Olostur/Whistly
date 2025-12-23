@@ -1,14 +1,9 @@
 import SwiftUI
 
 struct MeasureSelectorView: View {
-    @Binding var startMeasure: Int
-    @Binding var endMeasure: Int
-    let totalMeasures: Int
+    @Environment(MainContainer.self) private var viewModel
     var loops: [MeasureLoop] = []
     var selectedLoopId: UUID?
-    var onLoopSelect: ((MeasureLoop) -> Void)?
-    var onLoopAdd: ((Int, Int) -> Void)?
-    var onLoopRemove: ((UUID) -> Void)?
     
     @State private var showingAddLoop = false
     
@@ -26,8 +21,8 @@ struct MeasureSelectorView: View {
                     
                     HStack(spacing: 8) {
                         Button(action: {
-                            if startMeasure > 1 {
-                                startMeasure -= 1
+                            if viewModel.sequencer.startMeasure > 1 {
+                                viewModel.sequencer.startMeasure -= 1
                             }
                         }) {
                             Image(systemName: "minus.circle.fill")
@@ -35,14 +30,14 @@ struct MeasureSelectorView: View {
                                 .foregroundColor(.purple.opacity(0.8))
                         }
                         
-                        Text("\(startMeasure)")
+                        Text("\(viewModel.sequencer.startMeasure)")
                             .font(.system(size: 18, weight: .bold, design: .monospaced))
                             .foregroundColor(.white)
                             .frame(width: 40)
                         
                         Button(action: {
-                            if startMeasure < endMeasure {
-                                startMeasure += 1
+                            if viewModel.sequencer.startMeasure < viewModel.sequencer.endMeasure {
+                                viewModel.sequencer.startMeasure += 1
                             }
                         }) {
                             Image(systemName: "plus.circle.fill")
@@ -62,8 +57,8 @@ struct MeasureSelectorView: View {
                     
                     HStack(spacing: 8) {
                         Button(action: {
-                            if endMeasure > startMeasure {
-                                endMeasure -= 1
+                            if viewModel.sequencer.endMeasure > viewModel.sequencer.startMeasure {
+                                viewModel.sequencer.endMeasure -= 1
                             }
                         }) {
                             Image(systemName: "minus.circle.fill")
@@ -71,14 +66,14 @@ struct MeasureSelectorView: View {
                                 .foregroundColor(.cyan.opacity(0.8))
                         }
                         
-                        Text("\(endMeasure)")
+                        Text("\(viewModel.sequencer.endMeasure)")
                             .font(.system(size: 18, weight: .bold, design: .monospaced))
                             .foregroundColor(.white)
                             .frame(width: 40)
                         
                         Button(action: {
-                            if endMeasure < totalMeasures {
-                                endMeasure += 1
+                            if viewModel.sequencer.endMeasure < viewModel.sequencer.totalMeasures {
+                                viewModel.sequencer.endMeasure += 1
                             }
                         }) {
                             Image(systemName: "plus.circle.fill")
@@ -93,37 +88,38 @@ struct MeasureSelectorView: View {
                 HStack(spacing: 8) {
                     if loops.isEmpty {
                         QuickSelectButton(title: "All") {
-                            startMeasure = 1
-                            endMeasure = totalMeasures
+                            viewModel.sequencer.startMeasure = 1
+                            viewModel.sequencer.endMeasure = viewModel.sequencer.totalMeasures
                         }
                     } else {
                         ForEach(loops) { loop in
-                            LoopButton(
-                                loop: loop,
-                                isSelected: selectedLoopId == loop.id,
-                                totalMeasures: totalMeasures,
-                                onSelect: {
-                                    onLoopSelect?(loop)
-                                },
-                                onRemove: loop.isDefault ? nil : {
-                                    onLoopRemove?(loop.id)
-                                }
-                            )
+                            //TODO !!!!
+//                            LoopButton(
+//                                loop: loop,
+//                                isSelected: selectedLoopId == loop.id,
+//                                totalMeasures: totalMeasures,
+//                                onSelect: {
+//                                    onLoopSelect?(loop)
+//                                },
+//                                onRemove: loop.isDefault ? nil : {
+//                                    onLoopRemove?(loop.id)
+//                                }
+//                            )
                         }
                     }
                     
-                    if onLoopAdd != nil {
-                        Button(action: { showingAddLoop = true }) {
-                            Image(systemName: "plus")
-                                .font(.system(size: 12, weight: .bold))
-                                .foregroundColor(.green.opacity(0.8))
-                                .frame(width: 32, height: 28)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.green.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [4]))
-                                )
-                        }
-                    }
+//                    if onLoopAdd != nil {
+//                        Button(action: { showingAddLoop = true }) {
+//                            Image(systemName: "plus")
+//                                .font(.system(size: 12, weight: .bold))
+//                                .foregroundColor(.green.opacity(0.8))
+//                                .frame(width: 32, height: 28)
+//                                .background(
+//                                    RoundedRectangle(cornerRadius: 8)
+//                                        .stroke(Color.green.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [4]))
+//                                )
+//                        }
+//                    }
                 }
                 .padding(.horizontal, 4)
             }
@@ -136,11 +132,43 @@ struct MeasureSelectorView: View {
         .alert("Add Loop", isPresented: $showingAddLoop) {
             Button("Cancel", role: .cancel) { }
             Button("Add") {
-                onLoopAdd?(startMeasure, endMeasure)
+//                onLoopAdd?(viewModel.sequencer.startMeasure, viewModel.sequencer.endMeasure)
             }
         } message: {
-            Text("Add current range (\(startMeasure)-\(endMeasure)) as a new loop?")
+            Text("Add current range (\(viewModel.sequencer.startMeasure)-\(viewModel.sequencer.endMeasure)) as a new loop?")
         }
+    }
+    
+    private func selectLoop(_ loop: MeasureLoop) {
+//        selectedLoopId = loop.id
+//        sequencer.startMeasure = loop.startMeasure
+//        sequencer.endMeasure = min(loop.endMeasure, sequencer.totalMeasures)
+//        
+//        if let tuneId = currentTuneId {
+//            tuneManager.selectLoop(for: tuneId, loopId: loop.id)
+//        }
+    }
+    
+    private func addLoop(start: Int, end: Int) {
+//        guard let tuneId = currentTuneId else { return }
+//        tuneManager.addLoop(for: tuneId, startMeasure: start, endMeasure: end)
+//        measureLoops = tuneManager.getLoops(for: tuneId)
+//        if let newLoop = measureLoops.last {
+//            selectedLoopId = newLoop.id
+//        }
+    }
+    
+    private func removeLoop(loopId: UUID) {
+//        guard let tuneId = currentTuneId else { return }
+//        tuneManager.removeLoop(for: tuneId, loopId: loopId)
+//        measureLoops = tuneManager.getLoops(for: tuneId)
+//        if selectedLoopId == loopId {
+//            selectedLoopId = measureLoops.first?.id
+//            if let loop = measureLoops.first {
+//                sequencer.startMeasure = loop.startMeasure
+//                sequencer.endMeasure = min(loop.endMeasure, sequencer.totalMeasures)
+//            }
+//        }
     }
 }
 
@@ -221,4 +249,9 @@ struct LoopButton: View {
         }
         .buttonStyle(.plain)
     }
+}
+
+#Preview {
+    MeasureSelectorView()
+        .environment(MainContainer())
 }

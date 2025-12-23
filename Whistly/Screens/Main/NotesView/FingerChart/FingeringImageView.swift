@@ -1,9 +1,3 @@
-//
-//  FingeringImageView.swift
-//  MidiPlayer
-//
-//  Created by Lindar Olostur on 29.11.2025.
-//
 import SwiftUI
 
 struct FingeringImageView: View {
@@ -20,7 +14,6 @@ struct FingeringImageView: View {
     }
     
     var body: some View {
-        // Проверяем, находится ли нота в диапазоне свистля
         let pitchRange = whistleKey.pitchRange
         let isInRange = note.pitch >= pitchRange.min && note.pitch <= pitchRange.max
 

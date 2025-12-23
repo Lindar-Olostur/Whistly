@@ -12,14 +12,12 @@ struct FingeringRowView: View {
     let isPlaying: Bool
     let whistleKey: WhistleKey
     
-    private let symbolRowHeight: CGFloat = 8  // Минимальная высота для индикатора
+    private let symbolRowHeight: CGFloat = 8
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            // Фон для аппликатур
-            Color.white.opacity(0.15)
+            Color.fillQuartenary
             
-            // Аппликатуры
             ForEach(notes) { note in
                 let x = CGFloat(note.startBeat - startBeatOffset) * beatWidth
                 let width = max(CGFloat(note.duration) * beatWidth, 40)
